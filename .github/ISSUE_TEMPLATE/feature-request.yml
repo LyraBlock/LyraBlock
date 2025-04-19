@@ -1,0 +1,38 @@
+name: Feature Request
+description: Request a feature.
+title: "[Feature] "
+labels: ["feature", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request a feature.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: The details about the new feature
+      placeholder: Be detailed. Avoid using expressions that are too brief.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Reference
+      description: If the feature exists in some SkyBlock mod already, link them here.
+  - type: checkboxes
+    id: legit
+    attributes:
+      label: Legit
+      description: This feature SHOULD not violate any of the Hypixel's rules.
+      options:
+        - label: Legit
+          required: true
+  - type: checkboxes
+    id: no-duplicate
+    attributes:
+      label: No duplication
+      description: You have searched the issues and did NOT find anything similar.
+      options:
+        - label: no dupe
+          required: true
