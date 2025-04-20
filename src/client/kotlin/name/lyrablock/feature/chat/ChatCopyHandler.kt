@@ -1,4 +1,4 @@
-package name.lyrablock.chat
+package name.lyrablock.feature.chat
 
 import name.lyrablock.event.ClickChatEventFactory
 import name.lyrablock.mixin.client.ChatHudAccessor

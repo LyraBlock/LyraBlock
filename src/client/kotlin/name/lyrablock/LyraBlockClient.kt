@@ -1,6 +1,6 @@
 package name.lyrablock
 
-import name.lyrablock.chat.ChatCopyHandler
+import name.lyrablock.feature.chat.ChatCopyHandler
 import net.fabricmc.api.ClientModInitializer
 
 object LyraBlockClient : ClientModInitializer {
