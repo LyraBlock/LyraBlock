@@ -1,0 +1,44 @@
+name: Bug report
+description: Report a bug.
+title: "[Bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit a bug you find.
+        
+        Make sure you have searched the existing issues and didn't found something similar.
+        
+        We understand your feeling, but be calm when you report and be as detailed as possible.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: The details about the bug
+      placeholder: A brief introduction of the behavior and the expectation.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Let us know how to reproduce the situation so we can fix them more easily.
+      placeholder: 1. Order a pizza...
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: What environment is the game running on?
+      value: |
+        <details>
+        <summary>OS & Hardware</summary>
+        <!-- For example, what CPU/GPU are you using? Are you using Windows or Mac? -->
+        
+        </details>
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: Paste/Upload your log here, if available.
+      render: shell
