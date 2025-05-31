@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier
 
 
 object WaypointController {
-    val IDENTIFIER = Identifier.of("lyra", "waypoint")
+    val IDENTIFIER: Identifier = Identifier.of("lyra", "waypoint")
 
     init {
         HudLayerRegistrationCallback.EVENT.register {
