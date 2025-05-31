@@ -1,6 +1,7 @@
 package name.lyrablock
 
 import name.lyrablock.feature.chat.ChatCopyHandler
+import name.lyrablock.feature.misc.TpsTracker
 import name.lyrablock.util.waypoint.WaypointController
 import net.fabricmc.api.ClientModInitializer
 
@@ -9,5 +10,6 @@ object LyraBlockClient : ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ChatCopyHandler
 		WaypointController
+        TpsTracker
 	}
 }
