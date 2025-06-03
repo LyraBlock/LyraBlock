@@ -29,7 +29,6 @@
 		]
 	},
 	"mixins": [
-		"lyrablock.mixins.json",
 		{
 			"config": "lyrablock.client.mixins.json",
 			"environment": "client"
