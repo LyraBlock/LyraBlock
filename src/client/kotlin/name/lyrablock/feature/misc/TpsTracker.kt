@@ -16,7 +16,7 @@ object TpsTracker {
 //    var ticksPassed: Long = 0L
 
     // The samples used in calculation.
-    const val TICK_SAMPLES = 200
+    const val TICK_SAMPLES = 100
     val tickData = mutableListOf<Long>();
 //    var msBetweenTicks: Int? = null;
 
@@ -33,7 +33,7 @@ object TpsTracker {
                 val color = getTpsColor(tps ?: 0f)
                 context.drawText(
                     MinecraftClient.getInstance().textRenderer,
-                    if (tps == null) "TPS: §7(Calculating...)" else "TPS: $color${"%.1f".format(tps)}",
+                    if (tps == null) "TPS: §7(Collecting...)" else "TPS: $color${"%.1f".format(tps)}",
                     10,
                     10,
                     0xFFFFFFFF.toInt(),
@@ -56,13 +56,16 @@ object TpsTracker {
 
     fun getTps(): Float? {
         if (tickData.size < TICK_SAMPLES) return null
-
+// Line 59 speaking. TheColdPot got an exception here while debugging! I AM AN EMPTY LINE!!!!!!!!!
         // Note this is not the so-called *mspt*.
-        val averageMillisecondsBetweenTicks = (tickData.last() - tickData.first()) / (TICK_SAMPLES)
+        val averageMillisecondsBetweenTicks = ((tickData.last() - tickData.first()) / TICK_SAMPLES).toInt()
+
+        if (averageMillisecondsBetweenTicks == 0) return null
         return 1000f / averageMillisecondsBetweenTicks
     }
 
     fun getTpsColor(tps: Float): String = when {
+        // These critical values are provided by Skyhanni
         tps >= 19.8f -> "§2"
         tps >= 19.0f -> "§a"
         tps >= 17.5f -> "§6"
