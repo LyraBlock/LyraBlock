@@ -12,13 +12,10 @@ import net.minecraft.server.network.ServerPlayNetworkHandler
 import net.minecraft.util.Identifier
 
 object TpsTracker {
-//    var joinTime: Instant = Instant.fromEpochSeconds(0)
-//    var ticksPassed: Long = 0L
 
     // The samples used in calculation.
     const val TICK_SAMPLES = 100
     val tickData = mutableListOf<Long>();
-//    var msBetweenTicks: Int? = null;
 
     init {
         ServerTickEvents.END_SERVER_TICK.register(::onServerTick)
@@ -56,7 +53,7 @@ object TpsTracker {
 
     fun getTps(): Float? {
         if (tickData.size < TICK_SAMPLES) return null
-// Line 59 speaking. TheColdPot got an exception here while debugging! I AM AN EMPTY LINE!!!!!!!!!
+
         // Note this is not the so-called *mspt*.
         val averageMillisecondsBetweenTicks = ((tickData.last() - tickData.first()) / TICK_SAMPLES).toInt()
 
