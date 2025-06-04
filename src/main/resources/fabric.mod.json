@@ -15,12 +15,6 @@
 	"icon": "assets/lyrablock/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			{
-				"value": "name.lyrablock.LyraBlock",
-				"adapter": "kotlin"
-			}
-		],
 		"client": [
 			{
 				"value": "name.lyrablock.LyraBlockClient",
