@@ -4,7 +4,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.util.InputUtil
 import org.lwjgl.glfw.GLFW
 
-object KeyboardManager {
+object KeyboardUtils {
     const val LEFT_MOUSE = -100
     const val RIGHT_MOUSE = -99
     const val MIDDLE_MOUSE = -98

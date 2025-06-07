@@ -1,48 +1,37 @@
 package name.lyrablock.feature.chat
 
-import name.lyrablock.event.ClickChatEventFactory
+import name.lyrablock.event.ClickChatEvent
+import name.lyrablock.event.MouseClickData
 import name.lyrablock.mixin.client.ChatHudAccessor
+import name.lyrablock.util.KeyboardUtils.isControlDown
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.InputUtil
-import org.lwjgl.glfw.GLFW
 
 object ChatCopyHandler {
     init {
-        ClickChatEventFactory.register(::onMessageClick)
+        ClickChatEvent.EVENT.register(::onMessageClick)
     }
 
-    // Get chatX and chatY by mouse position, then get messageLineIndex.
-    fun getMessageLineIndexByMouse(accessor: ChatHudAccessor, mouseX: Double, mouseY: Double): Int {
-        val chatX = accessor.invokeToChatLineX(mouseX)
-        val chatY = accessor.invokeToChatLineY(mouseY)
-        return accessor.invokeGetMessageLineIndex(chatX, chatY)
-    }
+    private fun getMessageLineIndexByMouse(accessor: ChatHudAccessor, mouseX: Double, mouseY: Double): Int =
+        accessor.invokeGetMessageLineIndex(
+            accessor.invokeToChatLineX(mouseX),
+            accessor.invokeToChatLineY(mouseY)
+        )
 
-    fun onMessageClick(event: ClickChatEventFactory.ClickChatEvent) {
-        val (mouseX, mouseY, button, chatHud) = event
-
-
+    fun onMessageClick(data: MouseClickData, chatHud: ChatHudAccessor) {
+        val (mouseX, mouseY, button) = data
         val client = MinecraftClient.getInstance()
-        val windowHandle = client.window.handle
+        if (button != 0 || !isControlDown()) return
 
-        val isControlPressed = InputUtil.isKeyPressed(windowHandle, GLFW.GLFW_KEY_LEFT_CONTROL)
-                || InputUtil.isKeyPressed(windowHandle, GLFW.GLFW_KEY_RIGHT_CONTROL)
-
-        if (button != 0 || !isControlPressed) return
-
-        // The accessor exposed toChatLine, etc.
         val lineIndex = getMessageLineIndexByMouse(chatHud, mouseX, mouseY)
-        // Somehow StackOverflow happens
-        if (lineIndex < 0) return
-        val messages = chatHud.getVisibleMessages()
-        if (lineIndex >= messages.size) return
-        val message = messages[lineIndex]
-        val builder = StringBuilder()
-        message.content().accept { index, style, codePoint ->
-            builder.appendCodePoint(codePoint)
-            true
-        }
+        if (lineIndex !in 0 until chatHud.getVisibleMessages().size) return
 
-        client.keyboard.clipboard = builder.toString()
+        val message = chatHud.getVisibleMessages()[lineIndex]
+
+        client.keyboard.clipboard = buildString {
+            message.content().accept { _, _, codePoint ->
+                appendCodePoint(codePoint)
+                true
+            }
+        }
     }
 }

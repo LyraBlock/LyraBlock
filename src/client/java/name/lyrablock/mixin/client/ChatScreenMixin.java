@@ -1,7 +1,8 @@
 package name.lyrablock.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import name.lyrablock.event.ClickChatEventFactory;
+import name.lyrablock.event.ClickChatEvent;
+import name.lyrablock.event.MouseClickData;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +24,8 @@ public class ChatScreenMixin {
     void lyra$mouseClicked(
             double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir, @Local ChatHud chatHud
     ) {
-        ClickChatEventFactory.INSTANCE.dispatch(new ClickChatEventFactory.ClickChatEvent(
-                mouseX, mouseY, button, (ChatHudAccessor) chatHud));
+//        ClickChatEventFactory.INSTANCE.dispatch(new ClickChatEventFactory.ClickChatEvent(
+//                mouseX, mouseY, button, (ChatHudAccessor) chatHud));
+        ClickChatEvent.EVENT.invoker().onClick(new MouseClickData(mouseX, mouseY, button), (ChatHudAccessor) chatHud);
     }
 }
