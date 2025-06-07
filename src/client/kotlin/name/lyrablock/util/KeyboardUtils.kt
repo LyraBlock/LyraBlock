@@ -15,8 +15,7 @@ object KeyboardUtils {
     }
     private fun Int.isDown() = isKeyDown(this)
 
-    // TODO: Why can't I find GLFW.GLFW_KEY_META
-    fun isCommandDown() = false
+    fun isCommandDown() = GLFW.GLFW_KEY_LEFT_SUPER.isDown() || GLFW.GLFW_KEY_RIGHT_SUPER.isDown()
     fun isControlDown() = GLFW.GLFW_KEY_LEFT_CONTROL.isDown() || GLFW.GLFW_KEY_RIGHT_CONTROL.isDown()
     fun isModifierDown() = isCommandDown() || isControlDown()
     fun isShiftDown() = GLFW.GLFW_KEY_LEFT_SHIFT.isDown() || GLFW.GLFW_KEY_RIGHT_SHIFT.isDown()
