@@ -17,11 +17,11 @@ interface ClickChatEvent {
         val EVENT: Event<ClickChatCallback> = EventFactory.createArrayBacked<ClickChatCallback>(
             ClickChatCallback::class.java
         ) { listeners ->
-            { mouse: MouseClickData, chatHudAccessor: ChatHudAccessor ->
+            ClickChatCallback { mouse, chatHudAccessor ->
                 listeners.forEach {
                     it.onClick(mouse, chatHudAccessor)
                 }
-            } as ClickChatCallback
+            }
         }
     }
 }

@@ -1,20 +1,18 @@
 package name.lyrablock.util.render
 
+import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.RenderPhase
-import net.minecraft.client.render.VertexFormat
-import net.minecraft.client.render.VertexFormats
 
 object LyraRenderLayer {
-    val LINES_SEETHROUGH = RenderLayer.of(
+    val LINES_SEETHROUGH: RenderLayer = RenderLayer.of(
         "lyra_lines_seethrough",
-        VertexFormats.POSITION_COLOR,
-        VertexFormat.DrawMode.LINES,
         RenderLayer.DEFAULT_BUFFER_SIZE,
+        false,
+        true,
+        RenderPipelines.DEBUG_FILLED_BOX,
         RenderLayer.MultiPhaseParameters.builder()
-            .lineWidth(RenderPhase.LineWidth.FULL_LINE_WIDTH)
-            .transparency(RenderLayer.TRANSLUCENT_TRANSPARENCY)
-            .depthTest(RenderLayer.ALWAYS_DEPTH_TEST)
+            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
             .build(false)
     )
 }
