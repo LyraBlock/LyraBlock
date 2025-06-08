@@ -1,6 +1,9 @@
 package name.lyrablock.feature.misc
 
 import kotlinx.datetime.Clock
+import name.lyrablock.util.ChatSender
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -15,7 +18,7 @@ object TpsTracker {
 
     // The samples used in calculation.
     const val TICK_SAMPLES = 100
-    val tickData = mutableListOf<Long>();
+    val tickData = mutableListOf<Long>()
 
     init {
         ServerTickEvents.END_SERVER_TICK.register(::onServerTick)
@@ -30,13 +33,29 @@ object TpsTracker {
                 val color = getTpsColor(tps ?: 0f)
                 context.drawText(
                     MinecraftClient.getInstance().textRenderer,
-                    if (tps == null) "TPS: §7(Collecting...)" else "TPS: $color${"%.1f".format(tps)}",
+                    if (tps == null) "TPS: §7(Collecting...)" else "TPS: " + getTpsDisplay(),
                     10,
                     10,
                     0xFFFFFFFF.toInt(),
                     true
                 )
             }
+        }
+
+        ClientCommandRegistrationCallback.EVENT.register { dispatcher, registryAccess ->
+            dispatcher.register(
+                ClientCommandManager.literal("lyra").then(ClientCommandManager.literal("tps").executes {
+                            val tps = getTps()
+                            if (tps == null) {
+                                ChatSender.sendInfo("TPS: §cUnknown yet")
+                                return@executes 1
+                            }
+
+                            ChatSender.sendInfo("TPS: " + getTpsDisplay())
+
+                            return@executes 1
+                        })
+            )
         }
     }
 
@@ -68,5 +87,11 @@ object TpsTracker {
         tps >= 17.5f -> "§6"
         tps >= 12.0f -> "§c"
         else -> "§4"
+    }
+
+    fun getTpsDisplay(): String? {
+        val tps = getTps() ?: return null
+        val color = getTpsColor(tps)
+        return color + "%.1f".format(tps)
     }
 }
