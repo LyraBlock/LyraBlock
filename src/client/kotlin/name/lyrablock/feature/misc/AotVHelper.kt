@@ -6,6 +6,7 @@ import name.lyrablock.util.render.WorldRenderDSL.renderBlockFilled
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
+import net.minecraft.component.DataComponentTypes
 import net.minecraft.item.Items
 import net.minecraft.util.hit.HitResult
 import net.minecraft.util.math.Vec3d
@@ -25,16 +26,23 @@ object AotVHelper {
         if (!player.isSneaking) return
 
         val inventory = player.inventory
-        val isAotVItem = inventory.selectedStack.item in arrayOf(Items.DIAMOND_SWORD, Items.DIAMOND_SWORD)
+        val selectedStack = inventory.selectedStack
+        val isAotVItem = selectedStack.item in arrayOf(Items.DIAMOND_SWORD, Items.DIAMOND_SWORD)
 
         if (!isAotVItem) return
 
-        // TODO: detect if the SkyBlock id is AotE/AotV
+        val customData = selectedStack.components.get(DataComponentTypes.CUSTOM_DATA)?.nbt ?: return
+
+        if (customData.getByte("ethermerge", 0.toByte()) != 1.toByte()) return
+
+        // Transmission Tuners applied.
+        val tunedTransmission = customData.getInt("tuned_transmission", 0)
+        val maxDistance = 57 + tunedTransmission
 
         val world = context.world()
         val camera = context.camera()
         val start = camera.pos
-        val end = start.add(Vec3d.fromPolar(camera.pitch, camera.yaw).multiply(43.0))
+        val end = start.add(Vec3d.fromPolar(camera.pitch, camera.yaw).multiply(maxDistance.toDouble()))
 
         val hitResult = world.raycast(
             RaycastContext(
@@ -56,7 +64,6 @@ object AotVHelper {
             OVERLAY_COLOR
         )
 
-//
-//        context.renderBlockFilled(LyraRenderLayer.QUADS, targetX, targetY, targetZ, LyraColor.WHITE)
+        // TODO: FOV change so one can see the targeted block clearly
     }
 }
