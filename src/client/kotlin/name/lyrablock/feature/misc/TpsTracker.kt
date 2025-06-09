@@ -1,6 +1,7 @@
 package name.lyrablock.feature.misc
 
 import kotlinx.datetime.Clock
+import name.lyrablock.LyraSubCommandRegister
 import name.lyrablock.util.ChatSender
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -43,19 +44,15 @@ object TpsTracker {
         }
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, registryAccess ->
-            dispatcher.register(
-                ClientCommandManager.literal("lyra").then(ClientCommandManager.literal("tps").executes {
-                            val tps = getTps()
-                            if (tps == null) {
-                                ChatSender.sendInfo("TPS: §cUnknown yet")
-                                return@executes 1
-                            }
-
-                            ChatSender.sendInfo("TPS: " + getTpsDisplay())
-
-                            return@executes 1
-                        })
-            )
+            LyraSubCommandRegister.register(dispatcher, "tps") {
+                val tps = getTps()
+                if (tps == null) {
+                    ChatSender.sendInfo("TPS: §cUnknown yet")
+                } else {
+                    ChatSender.sendInfo("TPS: ${getTpsDisplay()}")
+                }
+                return@register 1
+            }
         }
     }
 
