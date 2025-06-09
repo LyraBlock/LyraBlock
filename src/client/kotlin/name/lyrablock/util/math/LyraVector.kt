@@ -3,8 +3,12 @@ package name.lyrablock.util.math
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.math.Vec3i
 import org.joml.Vector3f
+import java.lang.Math.toRadians
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 
+@Suppress("unused")
 data class LyraVector(val x: Double, val y: Double, val z: Double) {
     fun add(x: Number, y: Number, z: Number) =
         LyraVector(this.x + x.toDouble(), this.y + y.toDouble(), this.z + z.toDouble())
@@ -36,6 +40,8 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
 
     fun toVec3d() = Vec3d(x, y, z)
 
+    fun toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
+
     companion object {
         fun Number.times(that: LyraVector) = that * this
 
@@ -47,5 +53,21 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
 
         fun of(that: Vector3f) = of(that.x, that.y, that.z)
 
+        /**
+         * Returns the direction vector from the pitch and yaw (in degree).
+         */
+        fun directionFromPolar(pitch: Double, yaw: Double): LyraVector {
+            val radYaw = toRadians(-yaw)
+            val radPitch = toRadians(-pitch)
+            val cosPitch = cos(radPitch)
+            return LyraVector(sin(radYaw) * cosPitch, sin(radPitch), cos(radYaw) * cosPitch)
+        }
+
+        fun directionFromPolar(pitch: Float, yaw: Float) = directionFromPolar(pitch.toDouble(), yaw.toDouble())
+
+        val UNIT_CUBE = LyraVector(1.0, 1.0, 1.0)
+        val UNIT_I = LyraVector(1.0, 0.0, 0.0)
+        val UNIT_J = LyraVector(0.0, 1.0, 0.0)
+        val UNIT_K = LyraVector(0.0, 0.0, 1.0)
     }
 }
