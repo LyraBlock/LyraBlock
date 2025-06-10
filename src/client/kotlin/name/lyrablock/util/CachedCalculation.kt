@@ -1,7 +1,5 @@
 package name.lyrablock.util
 
-import kotlin.reflect.KFunction
-
 /**
  * A utility object for caching the results of calculations based on a dependency.
  * This is useful for expensive calculations that depend on some state that doesn't change often.
@@ -11,7 +9,7 @@ object CachedCalculation {
     val cache = mutableMapOf<Int, Any>()
     val cachedDependency = mutableMapOf<Int, Int>()
 
-    fun <T> calculateCached(dependency: Int, function: KFunction<T>): T {
+    fun <T> calculateCached(dependency: Int, function: () -> T): T {
         // We identify the function by its hash code.
         // Will this cause bug... Wait...
         val functionHash = function.hashCode()
@@ -20,7 +18,7 @@ object CachedCalculation {
         if (cachedDependency.getOrDefault(functionHash, null) == dependency)
             return cache[functionHash] as T
 
-        val result = function.call()
+        val result = function.invoke()
         cache[functionHash] = result as Any
         cachedDependency[functionHash] = dependency
         return result
