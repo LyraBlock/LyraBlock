@@ -1,7 +1,8 @@
 package name.lyrablock.util.render.transition
 
-import kotlinx.datetime.Clock
+import name.lyrablock.util.TimeUtils
 
+@Suppress("unused")
 // A value that transitions over time.
 class TransitionValue<T: TransitionValue.Transitionable<T>>(
     defaultValue: T,
@@ -31,12 +32,12 @@ class TransitionValue<T: TransitionValue.Transitionable<T>>(
     fun startTransition(target: T, time: Int) {
         startValue = currentValue()
         targetValue = target
-        startTime = Clock.System.now().toEpochMilliseconds()
+        startTime = TimeUtils.getEpochMilliseconds()
         transitionTime = time
     }
 
     fun currentValue(): T {
-        val elapsed = Clock.System.now().toEpochMilliseconds() - startTime
+        val elapsed = TimeUtils.getEpochMilliseconds() - startTime
 
         if (elapsed > startTime) return targetValue
 
