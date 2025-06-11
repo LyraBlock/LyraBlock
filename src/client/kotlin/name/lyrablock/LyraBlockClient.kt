@@ -11,7 +11,6 @@ object LyraBlockClient : ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ChatCopyHandler
         TpsTracker
-        WaypointController
         AotvHelper
 	}
 }
