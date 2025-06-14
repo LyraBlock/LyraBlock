@@ -16,8 +16,8 @@ object LyraSubCommandRegister {
     ) {
         // See https://docs.fabricmc.net/develop/commands/basics#client-commands
         dispatcher.register(
-            literal("lyra").then(literal(name).executes(executes))
+            literal("lyra:$name").executes(executes)
         )
-        dispatcher.register(literal("ly").then(literal(name).executes(executes)))
+        dispatcher.register(literal("ly:$name").executes(executes))
     }
 }
