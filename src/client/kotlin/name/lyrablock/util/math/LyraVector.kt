@@ -69,5 +69,6 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
         val UNIT_I = LyraVector(1.0, 0.0, 0.0)
         val UNIT_J = LyraVector(0.0, 1.0, 0.0)
         val UNIT_K = LyraVector(0.0, 0.0, 1.0)
+        val ORIGIN = LyraVector(0.0, 0.0, 0.0)
     }
 }
