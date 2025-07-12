@@ -42,6 +42,23 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
 
     fun toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
+    fun decompose(basis1: LyraVector, basis2: LyraVector, basis3: LyraVector): LyraVector {
+        val u = this
+
+        // Compute the determinant of the matrix A = [basis1, basis2, basis3]
+        val det = basis1 dot (basis2 cross basis3)
+        if (det == 0.0) {
+            throw IllegalArgumentException("Basis vectors are linearly dependent")
+        }
+
+        // Use Cramer's rule for vector decomposition
+        val alpha = (u dot (basis2 cross basis3)) / det
+        val beta  = (basis1 cross u dot basis3) / det
+        val gamma = (basis1 dot (basis2 cross u)) / det
+
+        return LyraVector(alpha, beta, gamma)
+    }
+
     companion object {
         fun Number.times(that: LyraVector) = that * this
 
