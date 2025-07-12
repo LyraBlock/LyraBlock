@@ -57,6 +57,7 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
          * Returns the direction vector from the pitch and yaw (in degree).
          */
         fun directionFromPolar(pitch: Double, yaw: Double): LyraVector {
+            // learn math ok? im not teaching you
             val radYaw = toRadians(-yaw)
             val radPitch = toRadians(-pitch)
             val cosPitch = cos(radPitch)
