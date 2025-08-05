@@ -5,6 +5,8 @@ import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 
 
+//TODO: make this less complicated
+
 data class MouseClickData(val mouseX: Double, val mouseY: Double, val button: Int)
 
 fun interface ClickChatCallback {

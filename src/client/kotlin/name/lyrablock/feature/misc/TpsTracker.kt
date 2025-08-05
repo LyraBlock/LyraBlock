@@ -1,9 +1,9 @@
 package name.lyrablock.feature.misc
 
 import kotlinx.datetime.Clock
+import name.lyrablock.InitializeWithClient
 import name.lyrablock.LyraSubCommandRegister
 import name.lyrablock.util.ChatSender
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
@@ -15,6 +15,7 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayNetworkHandler
 import net.minecraft.util.Identifier
 
+@InitializeWithClient
 object TpsTracker {
 
     // The samples used in calculation.
@@ -31,7 +32,6 @@ object TpsTracker {
                 IdentifiedLayer.MISC_OVERLAYS, Identifier.of("lyra:tps_test")
             ) { context, tickDeltaManager ->
                 val tps = getTps()
-                val color = getTpsColor(tps ?: 0f)
                 context.drawText(
                     MinecraftClient.getInstance().textRenderer,
                     if (tps == null) "TPS: §7(Collecting...)" else "TPS: " + getTpsDisplay(),

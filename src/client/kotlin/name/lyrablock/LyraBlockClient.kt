@@ -2,8 +2,8 @@ package name.lyrablock
 
 import name.lyrablock.feature.chat.ChatCopyHandler
 import name.lyrablock.feature.misc.AotvHelper
+import name.lyrablock.feature.misc.ForceSprint
 import name.lyrablock.feature.misc.TpsTracker
-import name.lyrablock.util.render.waypoint.WaypointController
 import net.fabricmc.api.ClientModInitializer
 
 object LyraBlockClient : ClientModInitializer {
@@ -12,5 +12,6 @@ object LyraBlockClient : ClientModInitializer {
 		ChatCopyHandler
         TpsTracker
         AotvHelper
+        ForceSprint
 	}
 }

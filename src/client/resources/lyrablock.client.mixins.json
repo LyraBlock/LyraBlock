@@ -1,13 +1,14 @@
 {
-    "required": true,
-    "package": "name.lyrablock.mixin.client",
-    "compatibilityLevel": "JAVA_21",
-    "client": [
-        "ChatHudAccessor",
-        "ChatScreenMixin",
-        "ExampleClientMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
+  "required": true,
+  "package": "name.lyrablock.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ChatHudAccessor",
+    "ChatScreenMixin",
+    "ExampleClientMixin",
+    "KeyBindingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }
