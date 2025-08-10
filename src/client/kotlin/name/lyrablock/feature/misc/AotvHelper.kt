@@ -1,6 +1,6 @@
 package name.lyrablock.feature.misc
 
-import name.lyrablock.InitializeWithClient
+import name.lyrablock.LyraModule
 import name.lyrablock.util.ItemUtils
 import name.lyrablock.util.math.LyraColor
 import name.lyrablock.util.render.LyraRenderLayer
@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.RaycastContext
 
-@InitializeWithClient
+@LyraModule
 object AotvHelper {
     private val OVERLAY_COLOR = LyraColor.argb(0xff8133d9).withAlpha(0.3f)
 

@@ -1,7 +1,7 @@
 package name.lyrablock.feature.misc
 
 import kotlinx.datetime.Clock
-import name.lyrablock.InitializeWithClient
+import name.lyrablock.LyraModule
 import name.lyrablock.LyraSubCommandRegister
 import name.lyrablock.util.ChatSender
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -15,7 +15,7 @@ import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayNetworkHandler
 import net.minecraft.util.Identifier
 
-@InitializeWithClient
+@LyraModule
 object TpsTracker {
 
     // The samples used in calculation.

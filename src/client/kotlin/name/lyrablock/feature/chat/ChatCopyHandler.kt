@@ -1,13 +1,13 @@
 package name.lyrablock.feature.chat
 
-import name.lyrablock.InitializeWithClient
+import name.lyrablock.LyraModule
 import name.lyrablock.event.ClickChatEvent
 import name.lyrablock.event.MouseClickData
 import name.lyrablock.mixin.client.ChatHudAccessor
 import name.lyrablock.util.KeyboardUtils.isControlDown
 import net.minecraft.client.MinecraftClient
 
-@InitializeWithClient
+@LyraModule
 object ChatCopyHandler {
     init {
         ClickChatEvent.EVENT.register(::onMessageClick)
