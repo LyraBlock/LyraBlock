@@ -1,0 +1,103 @@
+package name.lyrablock.feature.mining
+
+import name.lyrablock.LyraBlockClient
+import name.lyrablock.LyraModule
+import name.lyrablock.feature.pet.PetTracker
+import name.lyrablock.util.AbuseBoolean.toInt
+import name.lyrablock.util.DevUtils
+import name.lyrablock.util.ItemUtils
+import name.lyrablock.util.TripleInt
+import name.lyrablock.util.render.PlaySoundHelper
+import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import net.minecraft.text.Text
+import kotlin.math.ceil
+
+
+@LyraModule
+object PickaxeAbilityCooldownTracker {
+    /**
+     * @param name The display name (what Hypixel gives you).
+     * @param cooldown The ability cooldown, corresponds to 3 levels.
+     * @param cuteName The name shown in client (what we show to the player).
+     */
+    data class PickaxeAbilityData(val name: String, val cooldown: TripleInt, val cuteName: String = name)
+
+    val MINING_SPEED_BOOST = PickaxeAbilityData("Mining Speed Boost", TripleInt.triple(120))
+    val ANOMALOUS_DESIRE = PickaxeAbilityData("Anomalous Desire", TripleInt(120, 110, 100))
+    val PICKOBULUS = PickaxeAbilityData("Pickobulus", TripleInt(60, 50, 40))
+    val MANIAC_MINER = PickaxeAbilityData("Maniac Miner", TripleInt.triple(60))
+    val GEMSTONE_INFUSION = PickaxeAbilityData("Gemstone Infusion", TripleInt.triple(120))
+    val SHEER_FORCE = PickaxeAbilityData("Sheer Force", TripleInt.triple(120))
+    val ABILITY_LIST = arrayOf(
+        MINING_SPEED_BOOST,
+        ANOMALOUS_DESIRE,
+        PICKOBULUS,
+        MANIAC_MINER,
+        GEMSTONE_INFUSION,
+        SHEER_FORCE,
+    )
+
+    private val COOLDOWN_REGEX = Regex("""^§cYour Pickaxe ability is on cooldown for ([0-9]+)s\.$""")
+    private val USED_REGEX = Regex("""^§aYou used your §6(.+?) §aPickaxe Ability!""")
+
+    var ticksLeft: Int = 0
+    val secondsLeft get() = ceil(ticksLeft / 20.0).toInt()
+    var totalCooldown = 0
+    var activeAbility: PickaxeAbilityData? = null
+
+
+    init {
+        ClientReceiveMessageEvents.GAME.register(::onReceiveGameMessage)
+
+        ServerTickEvents.END_SERVER_TICK.register {
+            if (ticksLeft == 1) {
+//                val client = MinecraftClient.getInstance()
+//                val networkHandler: ClientPlayNetworkHandler = client.networkHandler ?: return@register
+//                val titlePacket = TitleS2CPacket(Text.of(activeAbility?.name ?: ""))
+//                networkHandler.onTitle(titlePacket)
+                PlaySoundHelper.ping()
+                println("pickaxe ready.")
+                --ticksLeft
+            }
+
+            if (ticksLeft > 0) --ticksLeft
+        }
+
+        DevUtils.registerDrawTestText(10, 20) { "$secondsLeft" }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onReceiveGameMessage(message: Text?, overlay: Boolean) {
+        if (overlay) return
+        val message = message?.string ?: return
+
+//        COOLDOWN_REGEX.matchEntire(message)?.let {
+//            cooldownTicks = it.groups[1]?.value?.toIntOrNull() ?: return
+//            return
+//        }
+        COOLDOWN_REGEX.matchEntire(message)?.let {
+            val detectedSecondsLeft = it.groups[1]?.value?.toIntOrNull() ?: return
+            if (detectedSecondsLeft != secondsLeft) {
+                LyraBlockClient.LOGGER.warn("Discrepancy detected in pickaxe ability cooldown! Local: $secondsLeft, Detected: $detectedSecondsLeft")
+            }
+            return
+        }
+
+        USED_REGEX.matchEntire(message)?.let { match ->
+            val abilityName = match.groups[1]?.value ?: return
+            activeAbility = ABILITY_LIST.find { it.name == abilityName } ?: return
+            val drillData = ItemUtils.selectedStack?.let { DrillTracker.extract(it) } ?: DrillTracker.PLACEHOLDER_DRILL
+            val abilityLevel = 1 + drillData.hasBlueCheese.toInt() + /* TODO: HOTM */ 1
+
+            val baseCooldown = activeAbility!!.cooldown[abilityLevel]
+
+            val balModifier = if (PetTracker.isBal()) 0.9 else 1.0
+            val fuelTankModifier = drillData.fuelTank.cooldownModifier
+            val skyMallModifier = 0.8
+            totalCooldown = (baseCooldown * 20 * balModifier * fuelTankModifier * skyMallModifier).toInt()
+            ticksLeft = totalCooldown
+            return
+        }
+    }
+}
