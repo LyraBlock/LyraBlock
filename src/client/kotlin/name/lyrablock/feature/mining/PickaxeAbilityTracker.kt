@@ -4,9 +4,11 @@ import name.lyrablock.LyraModule
 import name.lyrablock.feature.pet.PetTracker
 import name.lyrablock.util.AbuseBoolean.toInt
 import name.lyrablock.util.DevUtils
+import name.lyrablock.util.ItemUtils
+import name.lyrablock.util.TickTimer
 import name.lyrablock.util.TripleInt
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.client.MinecraftClient
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.text.Text
 
 @LyraModule
@@ -33,12 +35,20 @@ object PickaxeAbilityTracker {
     )
 
     private val COOLDOWN_REGEX = Regex("""^§cYour Pickaxe ability is on cooldown for ([0-9]+)s\.$""")
-    private val USED_REGEX = Regex("""^§aYou used your §6(.+?) §aPickaxe Ability!\.""")
+    private val USED_REGEX = Regex("""^§aYou used your §6(.+?) §aPickaxe Ability!""")
 
     var currentCooldown: Int = 0
 
+    val timer = TickTimer()
+
     init {
         ClientReceiveMessageEvents.GAME.register(::onReceiveGameMessage)
+
+        ServerTickEvents.END_SERVER_TICK.register { timer.tick() }
+
+        timer.everySecond {
+            if (currentCooldown > 0) --currentCooldown
+        }
 
         DevUtils.registerDrawTestText(10, 20, { "$currentCooldown" })
     }
@@ -53,16 +63,18 @@ object PickaxeAbilityTracker {
             return
         }
 
-        USED_REGEX.matchEntire(message)?.let {
-            val abilityName = it.groups[1]?.value ?: return
+        USED_REGEX.matchEntire(message)?.let { match ->
+            val abilityName = match.groups[1]?.value ?: return
             val ability = ABILITY_LIST.find { it.cuteName == abilityName } ?: return
-            val selectedStack = MinecraftClient.getInstance().player!!.inventory.selectedStack
-            val drillData = DrillTracker.extractData(selectedStack) ?: DrillTracker.PLACEHOLDER_DRILL
-            val abilityLevel = 1 + drillData.hasBlueCheese.toInt() + /*TODO: HOTM*/ 1
+            val drillData = ItemUtils.selectedStack?.let { DrillTracker.extract(it) } ?: DrillTracker.PLACEHOLDER_DRILL
+            val abilityLevel = 1 + drillData.hasBlueCheese.toInt() + /* TODO: HOTM */ 1
+
             val baseCooldown = ability.cooldown[abilityLevel]
+
             val balModifier = if (PetTracker.isBal()) 0.9 else 1.0
             val fuelTankModifier = drillData.fuelTank.cooldownModifier
-            currentCooldown = (baseCooldown * balModifier * fuelTankModifier).toInt()
+            val skyMallModifier = 0.8
+            currentCooldown = (baseCooldown * balModifier * fuelTankModifier * skyMallModifier).toInt()
 
             return
         }

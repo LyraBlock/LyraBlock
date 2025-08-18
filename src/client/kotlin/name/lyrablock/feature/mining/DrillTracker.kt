@@ -43,7 +43,7 @@ object DrillTracker {
 
 //    var drillDataset = mutableMapOf<Uuid, DrillData>()
 
-    fun extractData(stack: ItemStack): DrillData? {
+    fun extract(stack: ItemStack): DrillData? {
         val customData = ItemUtils.getCustomData(stack) ?: return null
         val id = customData.getString("id").get()
         if (!id.contains("DRILL")) return null
@@ -82,4 +82,5 @@ object DrillTracker {
             flowStateLevel,
         )
     }
+
 }
