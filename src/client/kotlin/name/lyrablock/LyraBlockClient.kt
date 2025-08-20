@@ -2,6 +2,7 @@ package name.lyrablock
 
 import name.lyrablock.feature.chat.ChatCopyHandler
 import name.lyrablock.feature.mining.PickaxeAbilityCooldownTracker
+import name.lyrablock.feature.mining.SnailHelper
 import name.lyrablock.feature.misc.AotvHelper
 import name.lyrablock.feature.misc.ForceSprint
 import name.lyrablock.feature.misc.TpsTracker
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory
 
 object LyraBlockClient : ClientModInitializer {
     val configPath = FabricLoader.getInstance().configDir.resolve("lyrablock")
-    val LOGGER = LoggerFactory.getLogger("lyrablock")
+    val LOGGER = LoggerFactory.getLogger("LyraBlock")
 
 	override fun onInitializeClient() {
 		ChatCopyHandler
@@ -19,5 +20,6 @@ object LyraBlockClient : ClientModInitializer {
         AotvHelper
         ForceSprint
         PickaxeAbilityCooldownTracker
+        SnailHelper
 	}
 }

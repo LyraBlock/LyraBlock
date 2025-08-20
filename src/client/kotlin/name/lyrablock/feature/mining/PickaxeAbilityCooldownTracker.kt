@@ -1,5 +1,7 @@
 package name.lyrablock.feature.mining
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import name.lyrablock.LyraBlockClient
 import name.lyrablock.LyraModule
 import name.lyrablock.feature.pet.PetTracker
@@ -12,6 +14,9 @@ import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.text.Text
 import kotlin.math.ceil
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 
 @LyraModule
@@ -41,27 +46,32 @@ object PickaxeAbilityCooldownTracker {
     private val COOLDOWN_REGEX = Regex("""^§cYour Pickaxe ability is on cooldown for ([0-9]+)s\.$""")
     private val USED_REGEX = Regex("""^§aYou used your §6(.+?) §aPickaxe Ability!""")
 
-    var ticksLeft: Int = 0
-    val secondsLeft get() = ceil(ticksLeft / 20.0).toInt()
-    var totalCooldown = 0
+//    var ticksLeft: Int = 0
+    val durationLeft get() = (totalDuration - (Clock.System.now() - startInstant)).coerceAtLeast(Duration.ZERO)
+    val secondsLeft get() = ceil(durationLeft.toDouble(DurationUnit.SECONDS)).toInt()
+//    var totalCooldown = 0
+    var startInstant = Instant.DISTANT_PAST
     var activeAbility: PickaxeAbilityData? = null
+    var totalDuration = 0.seconds
+    var ready = false
 
 
     init {
         ClientReceiveMessageEvents.GAME.register(::onReceiveGameMessage)
 
         ServerTickEvents.END_SERVER_TICK.register {
-            if (ticksLeft == 1) {
+            val now = Clock.System.now()
+            if (now >= startInstant + totalDuration && !ready) {
 //                val client = MinecraftClient.getInstance()
 //                val networkHandler: ClientPlayNetworkHandler = client.networkHandler ?: return@register
 //                val titlePacket = TitleS2CPacket(Text.of(activeAbility?.name ?: ""))
 //                networkHandler.onTitle(titlePacket)
                 PlaySoundHelper.ping()
+                ready = true
                 println("pickaxe ready.")
-                --ticksLeft
             }
 
-            if (ticksLeft > 0) --ticksLeft
+
         }
 
         DevUtils.registerDrawTestText(10, 20) { "$secondsLeft" }
@@ -72,14 +82,10 @@ object PickaxeAbilityCooldownTracker {
         if (overlay) return
         val message = message?.string ?: return
 
-//        COOLDOWN_REGEX.matchEntire(message)?.let {
-//            cooldownTicks = it.groups[1]?.value?.toIntOrNull() ?: return
-//            return
-//        }
         COOLDOWN_REGEX.matchEntire(message)?.let {
             val detectedSecondsLeft = it.groups[1]?.value?.toIntOrNull() ?: return
             if (detectedSecondsLeft != secondsLeft) {
-                LyraBlockClient.LOGGER.warn("Discrepancy detected in pickaxe ability cooldown! Local: $secondsLeft, Detected: $detectedSecondsLeft")
+                LyraBlockClient.LOGGER.error("Discrepancy detected in pickaxe ability cooldown! Local: $secondsLeft, Detected: $detectedSecondsLeft")
             }
             return
         }
@@ -95,8 +101,9 @@ object PickaxeAbilityCooldownTracker {
             val balModifier = if (PetTracker.isBal()) 0.9 else 1.0
             val fuelTankModifier = drillData.fuelTank.cooldownModifier
             val skyMallModifier = 0.8
-            totalCooldown = (baseCooldown * 20 * balModifier * fuelTankModifier * skyMallModifier).toInt()
-            ticksLeft = totalCooldown
+            totalDuration = baseCooldown.seconds * balModifier * fuelTankModifier * skyMallModifier
+            startInstant = Clock.System.now()
+            ready = false
             return
         }
     }
