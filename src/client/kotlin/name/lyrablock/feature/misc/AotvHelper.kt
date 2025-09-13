@@ -1,7 +1,7 @@
 package name.lyrablock.feature.misc
 
 import name.lyrablock.LyraModule
-import name.lyrablock.util.ItemUtils
+import name.lyrablock.util.item.ItemUtils.getCustomData
 import name.lyrablock.util.math.LyraColor
 import name.lyrablock.util.render.LyraRenderLayer
 import name.lyrablock.util.render.WorldRenderDSL.renderBlockFilled
@@ -37,7 +37,7 @@ object AotvHelper {
         val inventory = player.inventory
         val selectedStack = inventory.selectedStack
         val isHoldingAotv = selectedStack.item in AOTV_ITEMS
-        val customData = ItemUtils.getCustomData(selectedStack) ?: return -1
+        val customData = selectedStack.getCustomData() ?: return -1
         if (!isHoldingAotv) return -1
         if (!player.isSneaking) return -1
         if (customData.getByte("ethermerge", 0.toByte()) != 1.toByte()) return -1

@@ -1,6 +1,5 @@
 package name.lyrablock.event
 
-import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 
 fun interface KeyBindingOverrideCallback {
@@ -8,7 +7,7 @@ fun interface KeyBindingOverrideCallback {
 
     companion object {
         @JvmField
-        val EVENT: Event<KeyBindingOverrideCallback> = EventFactory.createArrayBacked<KeyBindingOverrideCallback>(
+        val EVENT = EventFactory.createArrayBacked(
             KeyBindingOverrideCallback::class.java
         ) { listeners ->
             KeyBindingOverrideCallback { translateKey ->
@@ -16,9 +15,8 @@ fun interface KeyBindingOverrideCallback {
                     val result = it.override(translateKey)
                     if (result != null) return@KeyBindingOverrideCallback result
                 }
-
                 null
             }
-        }
+        }!!
     }
 }

@@ -1,4 +1,4 @@
-package name.lyrablock.util
+package name.lyrablock.util.math
 
 object TimeUtils {
     fun getEpochMilliseconds(): Long {

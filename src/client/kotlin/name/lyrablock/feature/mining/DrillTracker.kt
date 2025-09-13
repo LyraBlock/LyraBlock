@@ -1,7 +1,10 @@
 package name.lyrablock.feature.mining
 
 import kotlinx.serialization.Serializable
-import name.lyrablock.util.ItemUtils
+import name.lyrablock.util.item.ItemUtils.getCustomData
+import name.lyrablock.util.item.ItemUtils.getLoreLines
+import name.lyrablock.util.item.ItemUtils.getSkyBlockID
+import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
 import name.lyrablock.util.math.NumberUtils
 import net.minecraft.item.ItemStack
 import kotlin.jvm.optionals.getOrNull
@@ -25,8 +28,8 @@ object DrillTracker {
         val fuelTank: FuelTank,
         val flowStateLevel: Int
     ) {
-        // This is used to remove drill data from deleted profiles. TODO.
-        val profile = Uuid.random()
+////         This is used to remove drill data from deleted profiles.
+//        val profile = Uuid.random()
     }
 
     enum class FuelTank(val cooldownModifier: Double) {
@@ -44,10 +47,10 @@ object DrillTracker {
 //    var drillDataset = mutableMapOf<Uuid, DrillData>()
 
     fun extract(stack: ItemStack): DrillData? {
-        val customData = ItemUtils.getCustomData(stack) ?: return null
-        val id = customData.getString("id").get()
+        val id = stack.getSkyBlockID() ?: return null
         if (!id.contains("DRILL")) return null
-        val uuid = Uuid.parse(customData.getString("uuid").get())
+        val uuid = stack.getSkyBlockUUID() ?: return null
+        val customData = stack.getCustomData()!!
 
         val fuelTank = when (customData.getString("drill_part_fuel_tank").getOrNull()) {
             "perfectly_cut_fuel_tank" -> FuelTank.PERFECTLY_CUT
@@ -62,7 +65,7 @@ object DrillTracker {
 
         val flowStateLevel = customData.getCompound("enchantments").get().getInt("ultimate_flowstate").get()
 
-        val loreLinesString = ItemUtils.getLore(stack)?.lines?.map { it.string } ?: return null
+        val loreLinesString = stack.getLoreLines()?.map { it.string } ?: return null
 
         // Find the line with mining speed.
         val miningSpeed: Int = loreLinesString

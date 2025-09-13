@@ -4,7 +4,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.text.Text
 
 object ChatSender {
-    val PREFIX = Text.of("§3Lyra§bBlock §7» §r")
+    val PREFIX: Text = Text.of("§3Lyra§bBlock §7» §r")
 
     fun sendInfo(message: Text) {
         val client = MinecraftClient.getInstance()

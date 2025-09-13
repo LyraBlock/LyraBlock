@@ -7,8 +7,8 @@ import name.lyrablock.LyraModule
 import name.lyrablock.feature.pet.PetTracker
 import name.lyrablock.util.AbuseBoolean.toInt
 import name.lyrablock.util.DevUtils
-import name.lyrablock.util.ItemUtils
 import name.lyrablock.util.TripleInt
+import name.lyrablock.util.item.ItemUtils
 import name.lyrablock.util.render.PlaySoundHelper
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -78,9 +78,9 @@ object PickaxeAbilityCooldownTracker {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onReceiveGameMessage(message: Text?, overlay: Boolean) {
+    fun onReceiveGameMessage(message: Text, overlay: Boolean) {
         if (overlay) return
-        val message = message?.string ?: return
+        val message = message.string
 
         COOLDOWN_REGEX.matchEntire(message)?.let {
             val detectedSecondsLeft = it.groups[1]?.value?.toIntOrNull() ?: return
@@ -98,7 +98,7 @@ object PickaxeAbilityCooldownTracker {
 
             val baseCooldown = activeAbility!!.cooldown[abilityLevel]
 
-            val balModifier = if (PetTracker.isBal()) 0.9 else 1.0
+            val balModifier = if (PetTracker.hasChimneyPerk()) 0.9 else 1.0
             val fuelTankModifier = drillData.fuelTank.cooldownModifier
             val skyMallModifier = 0.8
             totalDuration = baseCooldown.seconds * balModifier * fuelTankModifier * skyMallModifier
