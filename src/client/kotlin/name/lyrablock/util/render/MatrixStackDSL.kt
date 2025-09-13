@@ -4,12 +4,14 @@ import net.minecraft.client.util.math.MatrixStack
 
 @Suppress("unused")
 object MatrixStackDSL {
-    fun MatrixStack.scale(x: Number, y: Number, z: Number = 1) {
+    fun MatrixStack.scale(x: Number, y: Number, z: Number = 1): MatrixStack {
         scale(x.toFloat(), y.toFloat(), z.toFloat())
+        return this
     }
 
-    fun MatrixStack.translate(x: Number, y: Number, z: Number = 0) {
+    fun MatrixStack.translate(x: Number, y: Number, z: Number = 0): MatrixStack {
         translate(x.toFloat(), y.toFloat(), z.toFloat())
+        return this
     }
 
     fun MatrixStack.uniformScale3D(s: Number) = scale(s, s, s)

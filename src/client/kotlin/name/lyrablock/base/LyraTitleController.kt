@@ -37,8 +37,7 @@ object LyraTitleController {
         val x = (context.scaledWindowWidth - width) / 2
         val y = (context.scaledWindowHeight - height) / 2
         context.withPushMatrix {
-            matrices.translate(x, y)
-            matrices.uniformScale2D(size)
+            matrices.translate(x, y).uniformScale2D(size)
             drawTextWithShadow(textRenderer, currentMessage, 0, -10, 0xFFFFFF)
         }
     }
@@ -46,7 +45,7 @@ object LyraTitleController {
     /**
      * @param duration The duration in ticks.
      */
-    fun show(message: Text, duration: Int = 100) {
+    fun show(message: Text, duration: Int = 200) {
         currentMessage = message
         remainingTicks = duration
     }
