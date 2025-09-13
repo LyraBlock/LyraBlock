@@ -13,7 +13,7 @@ object PlaySoundHelper {
         player.playSound(event, volume, pitch)
     }
 
-    fun ping() {
+    fun ding() {
         playSound(SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), 1.0f, 2.0f)
     }
 }

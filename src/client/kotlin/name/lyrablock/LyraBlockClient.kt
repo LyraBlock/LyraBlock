@@ -1,5 +1,6 @@
 package name.lyrablock
 
+import name.lyrablock.base.LyraTitleController
 import name.lyrablock.feature.chat.ChatCopyHandler
 import name.lyrablock.feature.display.SpeedTracker
 import name.lyrablock.feature.mining.PickaxeAbilityCooldownTracker
@@ -25,5 +26,6 @@ object LyraBlockClient : ClientModInitializer {
         PickaxeAbilityCooldownTracker
         SnailHelper
         SpeedTracker
+        LyraTitleController
 	}
 }

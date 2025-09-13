@@ -4,6 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import name.lyrablock.LyraBlockClient
 import name.lyrablock.LyraModule
+import name.lyrablock.base.LyraTitleController
 import name.lyrablock.feature.pet.PetTracker
 import name.lyrablock.util.AbuseBoolean.toInt
 import name.lyrablock.util.DevUtils
@@ -12,6 +13,7 @@ import name.lyrablock.util.item.ItemUtils
 import name.lyrablock.util.render.PlaySoundHelper
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import net.minecraft.server.MinecraftServer
 import net.minecraft.text.Text
 import kotlin.math.ceil
 import kotlin.time.Duration
@@ -59,22 +61,20 @@ object PickaxeAbilityCooldownTracker {
     init {
         ClientReceiveMessageEvents.GAME.register(::onReceiveGameMessage)
 
-        ServerTickEvents.END_SERVER_TICK.register {
-            val now = Clock.System.now()
-            if (now >= startInstant + totalDuration && !ready) {
-//                val client = MinecraftClient.getInstance()
-//                val networkHandler: ClientPlayNetworkHandler = client.networkHandler ?: return@register
-//                val titlePacket = TitleS2CPacket(Text.of(activeAbility?.name ?: ""))
-//                networkHandler.onTitle(titlePacket)
-                PlaySoundHelper.ping()
-                ready = true
-                println("pickaxe ready.")
-            }
-
-
-        }
+        ServerTickEvents.END_SERVER_TICK.register(::onServerTick)
 
         DevUtils.registerDrawTestText(10, 20) { "$secondsLeft" }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onServerTick(server: MinecraftServer) {
+        val now = Clock.System.now()
+        if (now >= startInstant + totalDuration && !ready) {
+            // java.lang.NullPointerException: null
+            LyraTitleController.show(Text.of("${activeAbility?.cuteName} Ready!"))
+            PlaySoundHelper.ding()
+            ready = true
+        }
     }
 
     @Suppress("UNUSED_PARAMETER")
