@@ -1,6 +1,6 @@
 package name.lyrablock.event
 
-enum class CancellableEventResult {
-    CANCEL,
-    PASS
+enum class CancellableEventResult(val isCancel: Boolean) {
+    CANCEL(true),
+    PASS(false)
 }

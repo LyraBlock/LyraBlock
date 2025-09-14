@@ -3,12 +3,13 @@
   "package": "name.lyrablock.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-      "ChatHudAccessor",
-      "ChatScreenMixin",
-      "ExampleClientMixin",
-      "ItemStackMixin",
-      "KeyBindingMixin",
-      "ScreenHandlerMixin"
+    "ChatHudAccessor",
+    "ChatScreenMixin",
+    "DrawContextMixin",
+    "ExampleClientMixin",
+    "ItemStackMixin",
+    "KeyBindingMixin",
+    "ScreenHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -16,12 +16,12 @@ annotation class LyraModule() {
                     // Here calls `init`.
                     val obj = kClass.objectInstance
                     if (obj == null) {
-                        LyraBlockClient.LOGGER.warn("Skipped non-object module: ${it.name}.")
+                        LyraBlockClient.LOGGER.warn("Found illegal module ${it.name}.")
                         return@forEach
                     }
-                    LyraBlockClient.LOGGER.info("Loading LyraBlock module: ${it.name}.")
+                    LyraBlockClient.LOGGER.debug("Loaded ${it.name}.")
                 } catch (error: Throwable) {
-                    LyraBlockClient.LOGGER.error("Failed to load: ${it.name}.", error)
+                    LyraBlockClient.LOGGER.error("Failed to load ${it.name}!", error)
                 }
             }
         }
