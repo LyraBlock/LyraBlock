@@ -52,7 +52,7 @@ object PickaxeAbilityCooldownTracker {
     val durationLeft get() = (totalDuration - (Clock.System.now() - startInstant)).coerceAtLeast(Duration.ZERO)
     val secondsLeft get() = ceil(durationLeft.toDouble(DurationUnit.SECONDS)).toInt()
 //    var totalCooldown = 0
-    var startInstant = Instant.DISTANT_PAST
+    var startInstant = Instant.DISTANT_FUTURE
     var activeAbility: PickaxeAbilityData? = null
     var totalDuration = 0.seconds
     var ready = false
