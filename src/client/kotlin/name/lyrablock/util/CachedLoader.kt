@@ -49,7 +49,7 @@ class CachedLoader<T : Any>(
 
     @Suppress("unchecked_cast")
     suspend fun fetchAndCache(): T? = runCatching {
-        if (lastFetch.untilNow() < rateLimit) return null
+        if (!canFetchNow()) return data
 
         val response = LyraBlockClient.httpClient.get(url)
 

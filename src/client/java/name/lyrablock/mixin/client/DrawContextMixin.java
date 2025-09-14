@@ -20,7 +20,7 @@ public class DrawContextMixin {
         cancellable = true
     )
     void lyra$drawContext(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci) {
-        final var result = DrawEvents.MODIFY_ITEM_TOOLTIP.invoker().onDrawTooltip(textRenderer, stack, x, y);
+        final var result = DrawEvents.MODIFY_ITEM_TOOLTIP.invoker().onDrawTooltip((DrawContext) (Object) this, textRenderer, stack, x, y);
         if (result.isCancel()) {
             ci.cancel();
         }
