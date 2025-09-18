@@ -75,7 +75,7 @@ object ItemValueDisplay {
         val fontHeight = textRenderer.fontHeight
         val tooltipWidth = text.maxOf { textRenderer.getWidth(it) }
         val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
-        val extraLines = (onBazaar * 2) + (onAuction * 3) + (if (hasUuid) 1 else 0)
+        val extraLines = (onBazaar * 2) + (onAuction * 3) + (hasUuid * 1)
         val extraHeight = extraLines * fontHeight
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
@@ -95,7 +95,7 @@ object ItemValueDisplay {
             context,
             positionerX,
             actualY,
-            tooltipWidth,
+            tooltipWidth + overflow * 1,
             actualHeight,
             400, texture)
 
@@ -111,6 +111,17 @@ object ItemValueDisplay {
             drawNormalTooltip(context, textRenderer, text, positionerX, actualY)
             if (overflow) context.disableScissor()
         }
+
+        context.takeIf { overflow }?.withPushMatrix {
+            matrices.translate(0, 0, 400)
+            // Draw scrollbar
+            val barHeight = (actualHeight.toFloat() / tooltipHeight * actualHeight).toInt().coerceAtLeast(10)
+            val barY = (offset / maxOffset * (actualHeight - barHeight)).toInt() + actualY
+            val barX = positionerX + tooltipWidth + 1
+            context.fill(barX, actualY, barX + 1, actualY + actualHeight, -0xaaaaab)
+            context.fill(barX, barY, barX + 1, barY + barHeight, -0x555556)
+        }
+
         return CancellableEventResult.CANCEL
     }
 
