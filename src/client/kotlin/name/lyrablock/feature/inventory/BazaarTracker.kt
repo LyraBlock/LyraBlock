@@ -3,6 +3,8 @@ package name.lyrablock.feature.inventory
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
@@ -33,7 +35,9 @@ object BazaarTracker {
 
     @Suppress("UNUSED_PARAMETER")
     private fun onClientTick(client: MinecraftClient) {
-        if (bazaarLoader.canFetchNow()) {
+        val lastUpdated = bazaarLoader.data?.lastUpdated?.let { Instant.fromEpochMilliseconds(it) } ?: Instant.DISTANT_PAST // if data is older than 5 minutes
+
+        if (bazaarLoader.canFetchNow() && Clock.System.now() - lastUpdated >= bazaarLoader.rateLimit) {
             GlobalScope.async { bazaarLoader.fetchAndCache() }
         }
     }
