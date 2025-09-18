@@ -1,5 +1,5 @@
 package name.lyrablock.event
 
 @Retention(AnnotationRetention.SOURCE)
-@Suppress("unused")
-annotation class InvokedBy(val clazz: kotlin.reflect.KClass<*>)
+@Suppress("unused", "PropertyName")
+annotation class InvokedBy(val `mixin class`: kotlin.reflect.KClass<*>)

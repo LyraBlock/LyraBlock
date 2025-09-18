@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 
 
-//TODO: make this less complicated
+//todo: fully rework
 
 data class MouseClickData(val mouseX: Double, val mouseY: Double, val button: Int)
 

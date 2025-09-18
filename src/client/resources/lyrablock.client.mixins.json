@@ -5,8 +5,6 @@
   "client": [
     "ChatHudAccessor",
     "ChatScreenMixin",
-    "DrawContextMixin",
-    "ExampleClientMixin",
     "HandledScreenMixin",
     "ItemStackMixin",
     "KeyBindingMixin",

@@ -1,7 +1,9 @@
 package name.lyrablock.event
 
+import name.lyrablock.mixin.client.KeyBindingMixin
 import net.fabricmc.fabric.api.event.EventFactory
 
+@InvokedBy(KeyBindingMixin::class)
 fun interface KeyBindingOverrideCallback {
     fun override(translateKey: String): Boolean?
 

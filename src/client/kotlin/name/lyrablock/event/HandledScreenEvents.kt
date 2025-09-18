@@ -9,6 +9,7 @@ import net.minecraft.screen.slot.Slot
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 
+@InvokedBy(HandledScreenMixin::class)
 object HandledScreenEvents {
     fun interface ModifyItemTooltip {
         fun onDrawItemTooltip(
@@ -28,7 +29,6 @@ object HandledScreenEvents {
     }
 
     @JvmField
-    @InvokedBy(HandledScreenMixin::class)
     val MODIFY_ITEM_TOOLTIP = EventFactory.createArrayBacked(ModifyItemTooltip::class.java) { listeners ->
         ModifyItemTooltip { context, focusedSlot, textRenderer, text, data, x, y, texture ->
             listeners.forEach {
@@ -44,7 +44,6 @@ object HandledScreenEvents {
     }!!
 
     @JvmField
-    @InvokedBy(HandledScreenMixin::class)
     val MOUSE_SCROLLED = EventFactory.createArrayBacked(MouseScrolled::class.java) { listeners ->
         MouseScrolled { mouseX, mouseY, horizontalAmount, verticalAmount ->
             listeners.forEach {

@@ -1,8 +1,10 @@
 package name.lyrablock.event
 
+import name.lyrablock.mixin.client.ItemStackMixin
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.item.ItemStack
 
+@InvokedBy(ItemStackMixin::class)
 object ItemUseEvents {
     fun interface Use {
         fun onUse(itemStack: ItemStack)
