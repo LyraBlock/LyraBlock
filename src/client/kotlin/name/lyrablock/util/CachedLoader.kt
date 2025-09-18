@@ -23,7 +23,7 @@ class CachedLoader<T : Any>(
     private val kClass: KClass<T>,
     localPath: Path,
     private val url: String,
-    private val rateLimit: Duration = 5.minutes
+    val rateLimit: Duration = 5.minutes
 ) {
     private val local = localPath.toFile()
     private var lastFetch: TimeMarker = TimeMarker()
@@ -39,7 +39,7 @@ class CachedLoader<T : Any>(
         }
     }
 
-    fun canFetchNow() = lastFetch.untilNow() >= rateLimit
+    fun canFetchNow() = (lastFetch.untilNow() >= rateLimit)
 
     @Suppress("unchecked_cast")
     fun loadLocalData(): T? = runCatching {
@@ -49,7 +49,7 @@ class CachedLoader<T : Any>(
 
     @Suppress("unchecked_cast")
     suspend fun fetchAndCache(): T? = runCatching {
-        if (lastFetch.untilNow() < rateLimit) return null
+        if (!canFetchNow()) return data
 
         val response = LyraBlockClient.httpClient.get(url)
 
