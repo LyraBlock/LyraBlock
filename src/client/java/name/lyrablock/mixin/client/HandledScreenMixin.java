@@ -15,7 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,5 +36,10 @@ public class HandledScreenMixin {
         if (!result.isCancel()) {
             instance.drawTooltip(textRenderer, text, data, x, y, texture);
         }
+    }
+
+    @Inject(method = "mouseScrolled", at = @At("HEAD"))
+    void lyra$mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount, CallbackInfoReturnable<Boolean> cir) {
+        HandledScreenEvents.MOUSE_SCROLLED.invoker().onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 }

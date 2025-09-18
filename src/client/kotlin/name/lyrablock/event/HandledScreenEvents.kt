@@ -11,15 +11,28 @@ import net.minecraft.util.Identifier
 
 object HandledScreenEvents {
     fun interface ModifyItemTooltip {
-        fun onDrawItemTooltip(context: DrawContext, focusedSlot: Slot, textRenderer: TextRenderer, text: List<Text>, data: TooltipData?, x: Int, y: Int, texture: Identifier?): CancellableEventResult
+        fun onDrawItemTooltip(
+            context: DrawContext,
+            focusedSlot: Slot,
+            textRenderer: TextRenderer,
+            text: List<Text>,
+            data: TooltipData?,
+            x: Int,
+            y: Int,
+            texture: Identifier?
+        ): CancellableEventResult
+    }
+
+    fun interface MouseScrolled {
+        fun onMouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double)
     }
 
     @JvmField
     @InvokedBy(HandledScreenMixin::class)
     val MODIFY_ITEM_TOOLTIP = EventFactory.createArrayBacked(ModifyItemTooltip::class.java) { listeners ->
-        ModifyItemTooltip { a, b, c, d, e, f, g, h ->
+        ModifyItemTooltip { context, focusedSlot, textRenderer, text, data, x, y, texture ->
             listeners.forEach {
-                val result = it.onDrawItemTooltip(a,b,c,d,e,f ,g, h)
+                val result = it.onDrawItemTooltip(context, focusedSlot, textRenderer, text, data, x, y, texture)
                 if (result.isCancel) {
                     return@ModifyItemTooltip CancellableEventResult.CANCEL
                 }
@@ -29,4 +42,14 @@ object HandledScreenEvents {
             CancellableEventResult.PASS
         }
     }!!
+
+    @JvmField
+    @InvokedBy(HandledScreenMixin::class)
+    val MOUSE_SCROLLED = EventFactory.createArrayBacked(MouseScrolled::class.java) { listeners ->
+        MouseScrolled { mouseX, mouseY, horizontalAmount, verticalAmount ->
+            listeners.forEach {
+                it.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
+            }
+        }
+    }
 }

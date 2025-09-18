@@ -13,9 +13,9 @@ object ItemUtils {
     fun ItemStack.getLore() = this.get(DataComponentTypes.LORE)
     fun ItemStack.getLoreLines() = this.getLore()?.lines
 
-    fun ItemStack.getSkyBlockID() : String? = this.getCustomData()?.getString("id")?.get()
+    fun ItemStack.getSkyBlockID() : String? = this.getCustomData()?.getString("id")?.orElse(null)
     @OptIn(ExperimentalUuidApi::class)
-    fun ItemStack.getSkyBlockUUID() : Uuid? = this.getCustomData()?.getString("uuid")?.get()?.let { Uuid.Companion.parse(it) }
+    fun ItemStack.getSkyBlockUUID() : Uuid? = this.getCustomData()?.getString("uuid")?.orElse(null)?.let { Uuid.Companion.parse(it) }
 
     fun ItemStack.getEnchantmentLevel(enchantment: String) : Int? {
         val enchantmentData = this.getCustomData()?.getCompound("enchantments")?.get() ?: return null
