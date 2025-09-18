@@ -4,7 +4,6 @@ import name.lyrablock.LyraModule
 import name.lyrablock.event.CancellableEventResult
 import name.lyrablock.event.HandledScreenEvents
 import name.lyrablock.util.AbuseBoolean.times
-import name.lyrablock.util.MCUtils
 import name.lyrablock.util.item.ItemUtils.getSkyBlockID
 import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
 import name.lyrablock.util.render.DrawContextDSL.withPushMatrix
@@ -88,10 +87,6 @@ object ItemTooltip {
         val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else height
         val actualY = if (overflow) 4 else positionerY
         maxOffset = (tooltipHeight - actualHeight).coerceAtLeast(0)
-
-        val client = MCUtils.theClient
-        val scale = client.window.scaleFactor
-        val fbHeight = client.window.framebufferHeight
 
         // Draw tooltip background
         TooltipBackgroundRenderer.render(
