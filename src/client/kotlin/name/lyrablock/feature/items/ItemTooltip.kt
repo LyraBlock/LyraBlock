@@ -1,4 +1,4 @@
-package name.lyrablock.feature.inventory
+package name.lyrablock.feature.items
 
 import name.lyrablock.LyraModule
 import name.lyrablock.event.CancellableEventResult
@@ -15,6 +15,8 @@ import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer
 import net.minecraft.item.tooltip.TooltipData
 import net.minecraft.screen.slot.Slot
 import net.minecraft.text.Text
+import net.minecraft.text.Text.literal
+import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
 import org.joml.component1
 import org.joml.component2
@@ -73,7 +75,6 @@ object ItemTooltip {
         val hasUuid = stack.getSkyBlockUUID() != null
         val onBazaar = BazaarTracker.isProduct(id)
         val onAuction = !onBazaar
-        check(onBazaar xor onAuction) // Ensure only one of these is true
 
         val tooltipDimensions = calculateTooltipDimensions(textRenderer, text, onBazaar, onAuction, hasUuid)
         val (tooltipWidth, tooltipHeight, extraHeight) = tooltipDimensions
@@ -90,8 +91,25 @@ object ItemTooltip {
         drawTooltipContent(context, textRenderer, text, positionerX, actualY, tooltipWidth, actualHeight, overflow)
         drawScrollbar(context, positionerX, actualY, tooltipWidth, actualHeight, tooltipHeight, overflow)
 
+
+        val y = actualY + actualHeight + PADDING - 3
+        drawTooltipBackground(context, positionerX, y, 50, extraHeight, false, texture)
+
+        context.withPushMatrix {
+            matrices.translate(positionerX, y, 400)
+            if (onBazaar) {
+                context.drawText(textRenderer,
+                    literal("BZ Buy").formatted(Formatting.YELLOW)
+                        .append(literal("${BazaarTracker.getStatus(id)?.buyPrice}")),
+                    0, 0, 0xffffff, true)
+            }
+            if (onAuction) {
+                // TODO
+            }
+        }
         return CancellableEventResult.CANCEL
     }
+
 
     /**
      * Calculates the dimensions of the tooltip, including extra height for additional lines.
@@ -107,7 +125,7 @@ object ItemTooltip {
         val tooltipWidth = text.maxOf { textRenderer.getWidth(it) }
         val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
         val extraLines = (onBazaar * 2) + (onAuction * 3) + (if (hasUuid) 1 else 0)
-        val extraHeight = if (enableItemValue) extraLines * fontHeight + PADDING else 0
+        val extraHeight = if (enableItemValue && (onBazaar || onAuction)) extraLines * fontHeight + PADDING else 0
         return Triple(tooltipWidth, tooltipHeight, extraHeight)
     }
 

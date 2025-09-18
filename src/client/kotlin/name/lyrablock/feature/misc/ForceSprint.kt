@@ -12,8 +12,7 @@ object ForceSprint {
     }
 
     fun overrideSprint(translateKey: String): Boolean? {
-        if (translateKey != "key.sprint") return null
-        if (!SkyBlockUtils.isInSkyBlock()) return null
+        if (translateKey != "key.sprint" || !SkyBlockUtils.isInSkyBlock()) return null
 
         return true
     }
