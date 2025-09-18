@@ -7,6 +7,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import name.lyrablock.LyraBlockClient
 import name.lyrablock.LyraModule
@@ -45,24 +46,29 @@ object BazaarTracker {
 
     @OptIn(ExperimentalSerializationApi::class)
     @JsonIgnoreUnknownKeys
+    @Serializable
     data class BazaarData(
         val success: Boolean,
         val lastUpdated: Long,
         val products: Map<String, BazaarProduct>
     ) {
+        @Serializable
+        @JsonIgnoreUnknownKeys
         data class BazaarProduct(
             @SerialName("product_id")
             val productId: String,
             @SerialName("quick_status")
             val quickStatus: QuickStatus
         ) {
+            @Serializable
+            @JsonIgnoreUnknownKeys
             data class QuickStatus(
-                val buyPrice: List<Double>,
-                val sellPrice: List<Double>,
-                val buyVolume: List<Int>,
-                val sellVolume: List<Int>,
-                val buyMovingWeek: List<Double>,
-                val sellMovingWeek: List<Double>,
+                val buyPrice: Double,
+                val sellPrice: Double,
+                val buyVolume: Int,
+                val sellVolume: Int,
+                val buyMovingWeek: Double,
+                val sellMovingWeek: Double,
                 val buyOrders: Int,
                 val sellOrders: Int,
             )

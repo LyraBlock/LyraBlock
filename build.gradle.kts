@@ -4,6 +4,7 @@ plugins {
     id("fabric-loom") version "1.10-SNAPSHOT"
     id("maven-publish")
     id("org.jetbrains.kotlin.jvm") version "2.1.20"
+    kotlin("plugin.serialization") version "1.8.0"
 }
 
 version = project.property("mod_version")!!
