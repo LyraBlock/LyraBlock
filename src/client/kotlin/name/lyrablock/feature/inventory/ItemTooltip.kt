@@ -26,8 +26,9 @@ import kotlin.uuid.ExperimentalUuidApi
  * Handles the display of item value tooltips in the inventory UI.
  * Optimized for SkyBlock items, with scrollable overflow and extra info.
  */
+@Suppress("unused")
 @LyraModule
-object ItemValueDisplay {
+object ItemTooltip {
     private const val PADDING = 2
     private val positioner = HoveredTooltipPositioner.INSTANCE!!
 
@@ -35,6 +36,8 @@ object ItemValueDisplay {
     private var current by observable(0) { _, _, _ -> offset = 0.0 }
     private var offset = 0.0
     private var maxOffset = 0
+
+    private val enableItemValue get() = true //TODO config in 3-5 business days
 
     init {
         HandledScreenEvents.MODIFY_ITEM_TOOLTIP.register(::onDrawItemTooltip)
@@ -76,13 +79,13 @@ object ItemValueDisplay {
         val tooltipWidth = text.maxOf { textRenderer.getWidth(it) }
         val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
         val extraLines = (onBazaar * 2) + (onAuction * 3) + (hasUuid * 1)
-        val extraHeight = extraLines * fontHeight
+        val extraHeight = if (enableItemValue) {extraLines * fontHeight + PADDING} else 0
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
-        val height = tooltipHeight + extraHeight + PADDING
+        val height = tooltipHeight + extraHeight
         val (positionerX, positionerY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, tooltipWidth, height)
-        val overflow = tooltipHeight + PADDING + extraHeight > scaledHeight
-        val actualHeight = if (overflow) scaledHeight - PADDING - extraHeight - 4 else height
+        val overflow = tooltipHeight + extraHeight > scaledHeight
+        val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else height
         val actualY = if (overflow) 4 else positionerY
         maxOffset = (tooltipHeight - actualHeight).coerceAtLeast(0)
 
@@ -97,7 +100,8 @@ object ItemValueDisplay {
             actualY,
             tooltipWidth + overflow * 1,
             actualHeight,
-            400, texture)
+            400, texture
+        )
 
         // Draw tooltip content, with scissor for overflow
         context.withPushMatrix {
