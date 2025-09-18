@@ -22,28 +22,36 @@ import org.joml.component2
 import kotlin.properties.Delegates.observable
 import kotlin.uuid.ExperimentalUuidApi
 
+/**
+ * Handles the display of item value tooltips in the inventory UI.
+ * Optimized for SkyBlock items, with scrollable overflow and extra info.
+ */
 @LyraModule
 object ItemValueDisplay {
-    const val PADDING = 2
-    val positioner = HoveredTooltipPositioner.INSTANCE!!
+    private const val PADDING = 2
+    private val positioner = HoveredTooltipPositioner.INSTANCE!!
 
-    var current by observable(0) { _, _, _ ->
-        offset = 0.0
-    }
-    var offset = 0.0
-    var maxOffset = 0
-
+    // Used to reset scroll offset when a new item is hovered
+    private var current by observable(0) { _, _, _ -> offset = 0.0 }
+    private var offset = 0.0
+    private var maxOffset = 0
 
     init {
         HandledScreenEvents.MODIFY_ITEM_TOOLTIP.register(::onDrawItemTooltip)
         HandledScreenEvents.MOUSE_SCROLLED.register(::onMouseScrolled)
     }
 
+    /**
+     * Handles mouse scroll events to scroll the tooltip if overflowing.
+     */
     @Suppress("UNUSED_PARAMETER")
     fun onMouseScrolled(mouseX: Double, mouseY: Double, hAmount: Double, vAmount: Double) {
         offset = (offset - vAmount * 5).coerceIn(0.0, maxOffset.toDouble())
     }
 
+    /**
+     * Draws the custom tooltip for SkyBlock items, with extra info and scroll support.
+     */
     @OptIn(ExperimentalUuidApi::class)
     @Suppress("UNUSED_PARAMETER")
     fun onDrawItemTooltip(
@@ -57,47 +65,32 @@ object ItemValueDisplay {
         texture: Identifier?
     ): CancellableEventResult {
         val stack = focusedSlot.stack
-//        current = stack.hashCode()
-        // To save resources, disables all tooltip modifications for non-SkyBlock items.
-        // This made the performance better, in exchange for its generality.
+        // Only handle SkyBlock items for performance
         val id = stack.getSkyBlockID() ?: return CancellableEventResult.PASS
-
-        val hasUuid: Boolean = stack.getSkyBlockUUID() != null
-
+        val hasUuid = stack.getSkyBlockUUID() != null
         val onBazaar = BazaarTracker.isProduct(id)
         val onAuction = !onBazaar
-        assert(onBazaar xor onAuction)
+        check(onBazaar xor onAuction) // Should never both be true or false
 
         val fontHeight = textRenderer.fontHeight
-
-        // Also is what Mojang wrote. I just translated them into Kotlin.
         val tooltipWidth = text.maxOf { textRenderer.getWidth(it) }
-        val tooltipHeight = (if (text.size == 1) (-2) else 0) + fontHeight * text.size
-
-        val width = tooltipWidth
-
-        val extraLines = onBazaar * 2 + onAuction * 3 + hasUuid * 1
+        val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
+        val extraLines = (onBazaar * 2) + (onAuction * 3) + (if (hasUuid) 1 else 0)
         val extraHeight = extraLines * fontHeight
-
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
-
         val height = tooltipHeight + extraHeight + PADDING
-
         val (positionerX, positionerY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, tooltipWidth, height)
-
         val overflow = tooltipHeight + PADDING + extraHeight > scaledHeight
-
         val actualHeight = if (overflow) scaledHeight - PADDING - extraHeight - 4 else height
         val actualY = if (overflow) 4 else positionerY
-
         maxOffset = (tooltipHeight - actualHeight).coerceAtLeast(0)
-
 
         val client = MCUtils.theClient
         val scale = client.window.scaleFactor
         val fbHeight = client.window.framebufferHeight
 
+        // Draw tooltip background
         TooltipBackgroundRenderer.render(
             context,
             positionerX,
@@ -106,40 +99,36 @@ object ItemValueDisplay {
             actualHeight,
             400, texture)
 
+        // Draw tooltip content, with scissor for overflow
         context.withPushMatrix {
-            matrices.translate(0, overflow * (-offset))
-
+            matrices.translate(0, if (overflow) -offset else 0.0)
             if (overflow) {
                 context.enableScissor(
-                    positionerX, actualY+offset.toInt(),
+                    positionerX, actualY + offset.toInt(),
                     positionerX + tooltipWidth, actualY + actualHeight + offset.toInt()
                 )
             }
-
             drawNormalTooltip(context, textRenderer, text, positionerX, actualY)
-
             if (overflow) context.disableScissor()
-
         }
-
-
         return CancellableEventResult.CANCEL
     }
 
-    fun drawNormalTooltip(
+    /**
+     * Draws the main tooltip text lines at the given position.
+     */
+    private fun drawNormalTooltip(
         context: DrawContext,
         textRenderer: TextRenderer,
         text: List<Text>,
         x: Int,
         y: Int,
     ) {
-
         context.withPushMatrix {
             matrices.translate(x, y, 400)
-
-            text.forEachIndexed { index, it ->
-                drawText(textRenderer, it, 0, 0, 0xffffff, false)
-                matrices.translate(0, textRenderer.fontHeight + (if (index == 0) 2 else 0))
+            text.forEachIndexed { index, line ->
+                drawText(textRenderer, line, 0, 0, 0xffffff, false)
+                matrices.translate(0, textRenderer.fontHeight + if (index == 0) 2 else 0)
             }
         }
     }
