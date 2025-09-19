@@ -7,20 +7,28 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 object ItemUtils {
+    /** Returns the custom NBT data of the ItemStack, or null if absent. */
     @Suppress("DEPRECATION")
-    fun ItemStack.getCustomData() = this.get(DataComponentTypes.CUSTOM_DATA)?.nbt
+    fun ItemStack.getCustomData() = get(DataComponentTypes.CUSTOM_DATA)?.nbt
 
-    fun ItemStack.getLore() = this.get(DataComponentTypes.LORE)
-    fun ItemStack.getLoreLines() = this.getLore()?.lines
+    /** Returns the lore component of the ItemStack, or null if absent. */
+    fun ItemStack.getLore() = get(DataComponentTypes.LORE)
 
-    fun ItemStack.getSkyBlockID() : String? = this.getCustomData()?.getString("id")?.orElse(null)
+    /** Returns the lore lines of the ItemStack, or null if absent. */
+    fun ItemStack.getLoreLines() = getLore()?.lines
+
+    /** Returns the SkyBlock ID from custom data, or null if absent. */
+    fun ItemStack.getSkyBlockID() = getCustomData()?.getString("id")?.orElse(null)
+
+    /** Returns the SkyBlock UUID from custom data, or null if absent. */
     @OptIn(ExperimentalUuidApi::class)
-    fun ItemStack.getSkyBlockUUID() : Uuid? = this.getCustomData()?.getString("uuid")?.orElse(null)?.let { Uuid.Companion.parse(it) }
+    fun ItemStack.getSkyBlockUUID() = getCustomData()?.getString("uuid")?.orElse(null)?.let(Uuid::parse)
 
-    fun ItemStack.getEnchantmentLevel(enchantment: String) : Int? {
-        val enchantmentData = this.getCustomData()?.getCompound("enchantments")?.get() ?: return null
-        return enchantmentData.getInt(enchantment).get()
-    }
+    /** Returns the level of the given enchantment, or null if not present. */
+    fun ItemStack.getEnchantmentLevel(enchantment: String): Int? =
+        getCustomData()?.getCompound("enchantments")?.get()?.getInt(enchantment)?.get()
 
-    val selectedStack: ItemStack? get() = MinecraftClient.getInstance().player?.inventory?.selectedStack
+    /** Returns the currently selected ItemStack, or null if unavailable. */
+    val selectedStack: ItemStack?
+        get() = MinecraftClient.getInstance().player?.inventory?.selectedStack
 }

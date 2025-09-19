@@ -3,7 +3,8 @@ package name.lyrablock.feature.items
 import name.lyrablock.LyraModule
 import name.lyrablock.event.CancellableEventResult
 import name.lyrablock.event.HandledScreenEvents
-import name.lyrablock.util.AbuseBoolean.times
+import name.lyrablock.feature.items.ItemValueDisplay.drawExtra
+import name.lyrablock.feature.items.ItemValueDisplay.getExtraLines
 import name.lyrablock.util.item.ItemUtils.getSkyBlockID
 import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
 import name.lyrablock.util.render.DrawContextDSL.withPushMatrix
@@ -15,8 +16,6 @@ import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer
 import net.minecraft.item.tooltip.TooltipData
 import net.minecraft.screen.slot.Slot
 import net.minecraft.text.Text
-import net.minecraft.text.Text.literal
-import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
 import org.joml.component1
 import org.joml.component2
@@ -30,7 +29,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @Suppress("unused")
 @LyraModule
 object ItemTooltip {
-    private const val PADDING = 9
+    private const val GAP = 9
     private val positioner = HoveredTooltipPositioner.INSTANCE!!
 
     // Used to reset scroll offset when a new item is hovered
@@ -74,59 +73,46 @@ object ItemTooltip {
         val id = stack.getSkyBlockID() ?: return CancellableEventResult.PASS
         val hasUuid = stack.getSkyBlockUUID() != null
         val onBazaar = BazaarTracker.isProduct(id)
-        val onAuction = !onBazaar
+        val onAuction = false
+        val extraText = getExtraLines(id, stack.count, hasUuid, onBazaar, onAuction, false)
 
-        val tooltipDimensions = calculateTooltipDimensions(textRenderer, text, onBazaar, onAuction, hasUuid)
-        val (tooltipWidth, tooltipHeight, extraHeight) = tooltipDimensions
+        val (tooltipHeight, extraHeight) = calculateHeight(textRenderer, text, extraText)
+        val tooltipWidth = textRenderer.textWidthOf(text)
+        val extraWidth = textRenderer.textWidthOf(extraText)
+        val totalWidth = maxOf(tooltipWidth, extraWidth)
+
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
         val height = tooltipHeight + extraHeight
-        val (positionerX, positionerY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, tooltipWidth, height)
-        val overflow = tooltipHeight + extraHeight > scaledHeight
-        val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else height
+        val (positionerX, positionerY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, totalWidth, height)
+        val overflow = height > scaledHeight
+        val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else tooltipHeight
         val actualY = if (overflow) 4 else positionerY
-        maxOffset = (tooltipHeight - actualHeight).coerceAtLeast(0)
+        maxOffset = (tooltipHeight - actualHeight + 3).coerceAtLeast(0)
 
         drawTooltipBackground(context, positionerX, actualY, tooltipWidth, actualHeight, overflow, texture)
         drawTooltipContent(context, textRenderer, text, positionerX, actualY, tooltipWidth, actualHeight, overflow)
         drawScrollbar(context, positionerX, actualY, tooltipWidth, actualHeight, tooltipHeight, overflow)
 
-
-        val y = actualY + actualHeight + PADDING - 3
-        drawTooltipBackground(context, positionerX, y, 50, extraHeight, false, texture)
-
-        context.withPushMatrix {
-            matrices.translate(positionerX, y, 400)
-            if (onBazaar) {
-                context.drawText(textRenderer,
-                    literal("BZ Buy").formatted(Formatting.YELLOW)
-                        .append(literal("${BazaarTracker.getStatus(id)?.buyPrice}")),
-                    0, 0, 0xffffff, true)
-            }
-            if (onAuction) {
-                // TODO
-            }
-        }
+        val yExtra = actualY + actualHeight + GAP
+        extraText?.let { drawExtra(context, positionerX, yExtra, extraWidth, textRenderer, it) }
         return CancellableEventResult.CANCEL
     }
 
+    private fun TextRenderer.textWidthOf(text: List<Text>?) = text?.maxOfOrNull { getWidth(it) } ?: 0
 
     /**
      * Calculates the dimensions of the tooltip, including extra height for additional lines.
      */
-    private fun calculateTooltipDimensions(
+    private fun calculateHeight(
         textRenderer: TextRenderer,
         text: List<Text>,
-        onBazaar: Boolean,
-        onAuction: Boolean,
-        hasUuid: Boolean
-    ): Triple<Int, Int, Int> {
+        extraLines: List<Text>?
+    ): Pair<Int, Int> {
         val fontHeight = textRenderer.fontHeight
-        val tooltipWidth = text.maxOf { textRenderer.getWidth(it) }
         val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
-        val extraLines = (onBazaar * 2) + (onAuction * 3) + (if (hasUuid) 1 else 0)
-        val extraHeight = if (enableItemValue && (onBazaar || onAuction)) extraLines * fontHeight + PADDING else 0
-        return Triple(tooltipWidth, tooltipHeight, extraHeight)
+        val extraHeight = (extraLines?.size ?: 0) * fontHeight + if (extraLines != null) GAP else 0
+        return tooltipHeight to extraHeight
     }
 
     /**
@@ -167,9 +153,7 @@ object ItemTooltip {
     ) {
         context.withPushMatrix {
             matrices.translate(0, if (overflow) -offset else 0.0)
-            if (overflow) {
-                context.enableScissor(x, y + offset.toInt(), x + width, y + height + offset.toInt())
-            }
+            if (overflow) context.enableScissor(x, y + offset.toInt(), x + width, y + height + offset.toInt())
             drawNormalTooltip(context, textRenderer, text, x, y)
             if (overflow) context.disableScissor()
         }
@@ -188,7 +172,6 @@ object ItemTooltip {
         overflow: Boolean
     ) {
         if (!overflow) return
-
         context.withPushMatrix {
             matrices.translate(0, 0, 400)
             val barHeight = (height.toFloat() / tooltipHeight * height).toInt().coerceAtLeast(10)
