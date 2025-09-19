@@ -1,9 +1,12 @@
 package name.lyrablock.util.math
 
+@Suppress("unused")
 class IntRectangle
 private constructor(val x1: Int, val y1: Int, val x2: Int, val y2: Int) {
     val width get() = x2 - x1
     val height get() = y2 - y1
+    val start get() = x1 to y1
+    val end get() = x2 to y2
 
     fun contains(x: Int, y: Int) = x in x1 until x2 && y in y1 until y2
 

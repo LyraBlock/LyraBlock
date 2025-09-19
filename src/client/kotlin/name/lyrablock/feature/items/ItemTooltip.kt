@@ -3,7 +3,6 @@ package name.lyrablock.feature.items
 import name.lyrablock.LyraModule
 import name.lyrablock.event.CancellableEventResult
 import name.lyrablock.event.HandledScreenEvents
-import name.lyrablock.feature.items.ItemExtraInformation.getExtraLines
 import name.lyrablock.util.item.ItemUtils.getSkyBlockID
 import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
 import name.lyrablock.util.math.IntRectangle
@@ -78,7 +77,7 @@ object ItemTooltip {
         val onAuction = false
 
         // Get extra text (price, museum, etc.)
-        val extraText = getExtraLines(id, stack.count, hasUuid, onBazaar, onAuction, false)
+        val extraText = ItemExtraInformation.of(id, stack.count, hasUuid, onBazaar, onAuction, false)
 
         // Calculate the dimensions for the tooltip
         val (tooltipContentHeight, extraHeight) = calculateHeight(textRenderer, text, extraText)
@@ -88,7 +87,7 @@ object ItemTooltip {
 
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
-        val height = tooltipContentHeight + extraHeight
+        val height = tooltipContentHeight + extraHeight + GAP
 
         // Use the native positioner to calculate the tooltip position.
         // We take the x. The y is discarded if the tooltip overflows.
@@ -126,7 +125,7 @@ object ItemTooltip {
     ): Pair<Int, Int> {
         val fontHeight = textRenderer.fontHeight
         val tooltipHeight = (if (text.size == 1) -2 else 0) + fontHeight * text.size
-        val extraHeight = (extraLines?.size ?: 0) * fontHeight + if (extraLines != null) GAP else 0
+        val extraHeight = (extraLines?.size ?: 0) * fontHeight
         return tooltipHeight to extraHeight
     }
 

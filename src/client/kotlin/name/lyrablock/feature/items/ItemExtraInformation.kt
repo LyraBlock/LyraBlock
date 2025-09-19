@@ -10,7 +10,7 @@ object ItemExtraInformation {
     /**
      * Returns extra value lines for the tooltip if the item is on Bazaar, Auction, or can be donated.
      */
-    fun getExtraLines(
+    fun of(
         id: String,
         count: Int,
         hasUuid: Boolean,
