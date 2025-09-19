@@ -3,10 +3,10 @@ package name.lyrablock.feature.items
 import name.lyrablock.LyraModule
 import name.lyrablock.event.CancellableEventResult
 import name.lyrablock.event.HandledScreenEvents
-import name.lyrablock.feature.items.ItemValueDisplay.drawExtra
-import name.lyrablock.feature.items.ItemValueDisplay.getExtraLines
+import name.lyrablock.feature.items.ItemExtraInformation.getExtraLines
 import name.lyrablock.util.item.ItemUtils.getSkyBlockID
 import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
+import name.lyrablock.util.math.IntRectangle
 import name.lyrablock.util.render.DrawContextDSL.withPushMatrix
 import name.lyrablock.util.render.MatrixStackDSL.translate
 import net.minecraft.client.font.TextRenderer
@@ -30,6 +30,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @LyraModule
 object ItemTooltip {
     private const val GAP = 9
+    private const val TOOLTIP_Z = 400
     private val positioner = HoveredTooltipPositioner.INSTANCE!!
 
     // Used to reset scroll offset when a new item is hovered
@@ -69,40 +70,54 @@ object ItemTooltip {
         y: Int,
         texture: Identifier?
     ): CancellableEventResult {
+        // Basic information
         val stack = focusedSlot.stack
         val id = stack.getSkyBlockID() ?: return CancellableEventResult.PASS
         val hasUuid = stack.getSkyBlockUUID() != null
         val onBazaar = BazaarTracker.isProduct(id)
         val onAuction = false
+
+        // Get extra text (price, museum, etc.)
         val extraText = getExtraLines(id, stack.count, hasUuid, onBazaar, onAuction, false)
 
-        val (tooltipHeight, extraHeight) = calculateHeight(textRenderer, text, extraText)
+        // Calculate the dimensions for the tooltip
+        val (tooltipContentHeight, extraHeight) = calculateHeight(textRenderer, text, extraText)
         val tooltipWidth = textRenderer.textWidthOf(text)
         val extraWidth = textRenderer.textWidthOf(extraText)
         val totalWidth = maxOf(tooltipWidth, extraWidth)
 
         val scaledWidth = context.scaledWindowWidth
         val scaledHeight = context.scaledWindowHeight
-        val height = tooltipHeight + extraHeight
-        val (positionerX, positionerY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, totalWidth, height)
-        val overflow = height > scaledHeight
-        val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else tooltipHeight
-        val actualY = if (overflow) 4 else positionerY
-        maxOffset = (tooltipHeight - actualHeight + 3).coerceAtLeast(0)
+        val height = tooltipContentHeight + extraHeight
 
-        drawTooltipBackground(context, positionerX, actualY, tooltipWidth, actualHeight, overflow, texture)
-        drawTooltipContent(context, textRenderer, text, positionerX, actualY, tooltipWidth, actualHeight, overflow)
-        drawScrollbar(context, positionerX, actualY, tooltipWidth, actualHeight, tooltipHeight, overflow)
+        // Use the native positioner to calculate the tooltip position.
+        // We take the x. The y is discarded if the tooltip overflows.
+        val (x, originalY) = positioner.getPosition(scaledWidth, scaledHeight, x, y, totalWidth, height)
+        val overflow = height > scaledHeight
+        val actualHeight = if (overflow) scaledHeight - extraHeight - 4 else tooltipContentHeight
+        // Here 4 is set for the tooltip texture's inset.
+        val actualY = if (overflow) 4 else originalY
+        maxOffset = (tooltipContentHeight - actualHeight + 3).coerceAtLeast(0)
+
+        val tooltipArea = IntRectangle.sized(x, actualY, tooltipWidth, actualHeight)
+        drawBackground(context, tooltipArea.expand(right = if (overflow) 1 else 0), texture)
+        drawTooltipContent(context, textRenderer, text, tooltipArea, overflow)
+        drawScrollbar(context, tooltipArea, tooltipContentHeight, overflow)
 
         val yExtra = actualY + actualHeight + GAP
-        extraText?.let { drawExtra(context, positionerX, yExtra, extraWidth, textRenderer, it) }
+        extraText?.let {
+            drawBackground(context, IntRectangle.sized(x, yExtra, extraWidth, extraHeight), null)
+            drawTextLines(context, textRenderer, it, x, yExtra, 0)
+        }
         return CancellableEventResult.CANCEL
     }
 
-    private fun TextRenderer.textWidthOf(text: List<Text>?) = text?.maxOfOrNull { getWidth(it) } ?: 0
+    private fun TextRenderer.textWidthOf(text: List<Text>?) =
+        text?.maxOfOrNull { getWidth(it) } ?: 0
 
     /**
      * Calculates the dimensions of the tooltip, including extra height for additional lines.
+     * TODO: cleanup code
      */
     private fun calculateHeight(
         textRenderer: TextRenderer,
@@ -118,23 +133,13 @@ object ItemTooltip {
     /**
      * Draws the tooltip background.
      */
-    private fun drawTooltipBackground(
+    private fun drawBackground(
         context: DrawContext,
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        overflow: Boolean,
+        area: IntRectangle,
         texture: Identifier?
     ) {
         TooltipBackgroundRenderer.render(
-            context,
-            x,
-            y,
-            width + if (overflow) 1 else 0,
-            height,
-            400,
-            texture
+            context, area.x1, area.y1, area.width, area.height, TOOLTIP_Z, texture
         )
     }
 
@@ -145,16 +150,15 @@ object ItemTooltip {
         context: DrawContext,
         textRenderer: TextRenderer,
         text: List<Text>,
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
+        area: IntRectangle,
         overflow: Boolean
     ) {
+        val (x, y) = area.x1 to area.y1
+        val (width, height) = area.width to area.height
         context.withPushMatrix {
             matrices.translate(0, if (overflow) -offset else 0.0)
             if (overflow) context.enableScissor(x, y + offset.toInt(), x + width, y + height + offset.toInt())
-            drawNormalTooltip(context, textRenderer, text, x, y)
+            drawTextLines(context, textRenderer, text, x, y)
             if (overflow) context.disableScissor()
         }
     }
@@ -164,17 +168,16 @@ object ItemTooltip {
      */
     private fun drawScrollbar(
         context: DrawContext,
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        tooltipHeight: Int,
+        tooltipArea: IntRectangle,
+        totalHeight: Int,
         overflow: Boolean
     ) {
+        val (x, y) = tooltipArea.x1 to tooltipArea.y1
+        val (width, height) = tooltipArea.width to tooltipArea.height
         if (!overflow) return
         context.withPushMatrix {
-            matrices.translate(0, 0, 400)
-            val barHeight = (height.toFloat() / tooltipHeight * height).toInt().coerceAtLeast(10)
+            matrices.translate(0, 0, TOOLTIP_Z)
+            val barHeight = (height.toFloat() / totalHeight * height).toInt().coerceAtLeast(10)
             val barY = (offset / maxOffset * (height - barHeight)).toInt() + y
             val barX = x + width + 1
             context.fill(barX, y, barX + 1, y + height, -0xaaaaab)
@@ -183,20 +186,21 @@ object ItemTooltip {
     }
 
     /**
-     * Draws the main tooltip text lines at the given position.
+     * Simply draw the text line by line.
      */
-    private fun drawNormalTooltip(
+    private fun drawTextLines(
         context: DrawContext,
         textRenderer: TextRenderer,
         text: List<Text>,
         x: Int,
         y: Int,
+        gapAfterFirst: Int = 0
     ) {
         context.withPushMatrix {
-            matrices.translate(x, y, 400)
+            matrices.translate(x, y, TOOLTIP_Z)
             text.forEachIndexed { index, line ->
                 drawText(textRenderer, line, 0, 0, 0xffffff, false)
-                matrices.translate(0, textRenderer.fontHeight + if (index == 0) 2 else 0)
+                matrices.translate(0, textRenderer.fontHeight + if (index == 0) gapAfterFirst else 0)
             }
         }
     }
