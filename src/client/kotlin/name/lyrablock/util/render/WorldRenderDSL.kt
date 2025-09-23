@@ -1,7 +1,7 @@
-package name.lyrablock.util.render
+package app.lyrablock.util.render
 
-import name.lyrablock.util.math.LyraColor
-import name.lyrablock.util.math.LyraVector
+import app.lyrablock.util.math.LyraColor
+import app.lyrablock.util.math.LyraVector
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider

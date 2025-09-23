@@ -1,9 +1,9 @@
-package name.lyrablock.feature.mining
+package app.lyrablock.feature.mining
 
+import app.lyrablock.LyraModule
+import app.lyrablock.util.DevUtils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import name.lyrablock.LyraModule
-import name.lyrablock.util.DevUtils
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.minecraft.text.Text
 import kotlin.time.Duration.Companion.seconds

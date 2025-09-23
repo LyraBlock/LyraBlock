@@ -1,4 +1,4 @@
-package name.lyrablock.util
+package app.lyrablock.util
 
 import net.minecraft.client.MinecraftClient
 

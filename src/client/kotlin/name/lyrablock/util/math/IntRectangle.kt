@@ -1,4 +1,4 @@
-package name.lyrablock.util.math
+package app.lyrablock.util.math
 
 @Suppress("unused")
 class IntRectangle

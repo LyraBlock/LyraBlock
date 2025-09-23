@@ -1,6 +1,6 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
-import name.lyrablock.mixin.client.KeyBindingMixin
+import app.lyrablock.mixin.client.KeyBindingMixin
 import net.fabricmc.fabric.api.event.EventFactory
 
 @InvokedBy(KeyBindingMixin::class)

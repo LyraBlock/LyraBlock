@@ -1,6 +1,6 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
-import name.lyrablock.mixin.client.ItemStackMixin
+import app.lyrablock.mixin.client.ItemStackMixin
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.item.ItemStack
 

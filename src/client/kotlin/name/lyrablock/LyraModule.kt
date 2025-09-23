@@ -1,4 +1,4 @@
-package name.lyrablock
+package app.lyrablock
 
 import org.reflections.Reflections
 

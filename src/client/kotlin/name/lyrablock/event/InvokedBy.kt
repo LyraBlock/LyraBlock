@@ -1,4 +1,4 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
 @Retention(AnnotationRetention.SOURCE)
 @Suppress("unused", "PropertyName")

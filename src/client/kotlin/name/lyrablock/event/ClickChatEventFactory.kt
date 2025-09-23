@@ -1,6 +1,6 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
-import name.lyrablock.mixin.client.ChatHudAccessor
+import app.lyrablock.mixin.client.ChatHudAccessor
 import net.fabricmc.fabric.api.event.Event
 import net.fabricmc.fabric.api.event.EventFactory
 

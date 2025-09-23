@@ -1,10 +1,10 @@
-package name.lyrablock.feature.chat
+package app.lyrablock.feature.chat
 
-import name.lyrablock.LyraModule
-import name.lyrablock.event.ClickChatEvent
-import name.lyrablock.event.MouseClickData
-import name.lyrablock.mixin.client.ChatHudAccessor
-import name.lyrablock.util.KeyboardUtils.isControlDown
+import app.lyrablock.LyraModule
+import app.lyrablock.event.ClickChatEvent
+import app.lyrablock.event.MouseClickData
+import app.lyrablock.mixin.client.ChatHudAccessor
+import app.lyrablock.util.KeyboardUtils.isControlDown
 import net.minecraft.client.MinecraftClient
 
 @LyraModule

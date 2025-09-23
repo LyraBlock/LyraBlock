@@ -1,4 +1,4 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.entity.player.PlayerEntity

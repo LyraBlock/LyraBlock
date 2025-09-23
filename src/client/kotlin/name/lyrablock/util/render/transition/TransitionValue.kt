@@ -1,6 +1,6 @@
-package name.lyrablock.util.render.transition
+package app.lyrablock.util.render.transition
 
-import name.lyrablock.util.math.TimeUtils
+import app.lyrablock.util.math.TimeUtils
 
 @Suppress("unused")
 // A value that transitions over time.

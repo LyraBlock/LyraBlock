@@ -1,8 +1,8 @@
-package name.lyrablock.feature.misc
+package app.lyrablock.feature.misc
 
-import name.lyrablock.LyraModule
-import name.lyrablock.event.KeyBindingOverrideCallback
-import name.lyrablock.util.SkyBlockUtils
+import app.lyrablock.LyraModule
+import app.lyrablock.event.KeyBindingOverrideCallback
+import app.lyrablock.util.SkyBlockUtils
 
 // Although we have toggle sprint in vanilla by default, force sprinting looks VERY nice!
 @LyraModule

@@ -1,9 +1,5 @@
-package name.lyrablock.util.render.waypoint
+package app.lyrablock.util.render.waypoint
 
-import name.lyrablock.util.math.LyraColor
-import name.lyrablock.util.render.LyraRenderLayer
-import name.lyrablock.util.render.WorldRenderDSL.renderBlockOutline
-import name.lyrablock.util.render.WorldRenderDSL.renderLineFromCrosshair
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 

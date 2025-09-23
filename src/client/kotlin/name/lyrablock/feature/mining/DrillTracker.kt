@@ -1,11 +1,11 @@
-package name.lyrablock.feature.mining
+package app.lyrablock.feature.mining
 
+import app.lyrablock.util.item.ItemUtils.getCustomData
+import app.lyrablock.util.item.ItemUtils.getLoreLines
+import app.lyrablock.util.item.ItemUtils.getSkyBlockID
+import app.lyrablock.util.item.ItemUtils.getSkyBlockUUID
+import app.lyrablock.util.math.NumberUtils
 import kotlinx.serialization.Serializable
-import name.lyrablock.util.item.ItemUtils.getCustomData
-import name.lyrablock.util.item.ItemUtils.getLoreLines
-import name.lyrablock.util.item.ItemUtils.getSkyBlockID
-import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
-import name.lyrablock.util.math.NumberUtils
 import net.minecraft.item.ItemStack
 import kotlin.jvm.optionals.getOrNull
 import kotlin.uuid.ExperimentalUuidApi

@@ -1,13 +1,13 @@
-package name.lyrablock.feature.items
+package app.lyrablock.feature.items
 
-import name.lyrablock.LyraModule
-import name.lyrablock.event.CancellableEventResult
-import name.lyrablock.event.HandledScreenEvents
-import name.lyrablock.util.item.ItemUtils.getSkyBlockID
-import name.lyrablock.util.item.ItemUtils.getSkyBlockUUID
-import name.lyrablock.util.math.IntRectangle
-import name.lyrablock.util.render.DrawContextDSL.withPushMatrix
-import name.lyrablock.util.render.MatrixStackDSL.translate
+import app.lyrablock.LyraModule
+import app.lyrablock.event.CancellableEventResult
+import app.lyrablock.event.HandledScreenEvents
+import app.lyrablock.util.item.ItemUtils.getSkyBlockID
+import app.lyrablock.util.item.ItemUtils.getSkyBlockUUID
+import app.lyrablock.util.math.IntRectangle
+import app.lyrablock.util.render.DrawContextDSL.withPushMatrix
+import app.lyrablock.util.render.MatrixStackDSL.translate
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner
@@ -138,7 +138,7 @@ object ItemTooltip {
         texture: Identifier?
     ) {
         TooltipBackgroundRenderer.render(
-            context, area.x1, area.y1, area.width, area.height, TOOLTIP_Z, texture
+            context, area.x1, area.y1, area.width, area.height, texture
         )
     }
 

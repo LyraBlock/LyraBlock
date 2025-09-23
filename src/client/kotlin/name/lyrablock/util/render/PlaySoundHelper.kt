@@ -1,4 +1,4 @@
-package name.lyrablock.util.render
+package app.lyrablock.util.render
 
 import net.minecraft.client.MinecraftClient
 import net.minecraft.sound.SoundEvent

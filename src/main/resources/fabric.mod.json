@@ -17,7 +17,7 @@
 	"entrypoints": {
 		"client": [
 			{
-				"value": "name.lyrablock.LyraBlockClient",
+				"value": "app.lyrablock.LyraBlockClient",
 				"adapter": "kotlin"
 			}
 		]

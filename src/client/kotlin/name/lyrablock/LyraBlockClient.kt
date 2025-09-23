@@ -1,7 +1,7 @@
-package name.lyrablock
+package app.lyrablock
 
+import app.lyrablock.util.FileDSL.ensurePath
 import io.ktor.client.*
-import name.lyrablock.util.FileDSL.ensurePath
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.loader.api.FabricLoader
 import org.slf4j.Logger
@@ -15,6 +15,6 @@ object LyraBlockClient : ClientModInitializer {
 
 	override fun onInitializeClient() {
         configPath.ensurePath()
-        LyraModule.load("name.lyrablock")
+        LyraModule.load("app.lyrablock")
 	}
 }

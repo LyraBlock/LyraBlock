@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "name.lyrablock.mixin.client",
+  "package": "app.lyrablock.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ChatHudAccessor",

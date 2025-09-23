@@ -1,4 +1,4 @@
-package name.lyrablock.util
+package app.lyrablock.util
 
 object AbuseBoolean {
     fun Boolean.toInt() = when (this) {

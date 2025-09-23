@@ -1,16 +1,16 @@
-package name.lyrablock.feature.mining
+package app.lyrablock.feature.mining
 
+import app.lyrablock.LyraBlockClient
+import app.lyrablock.LyraModule
+import app.lyrablock.base.LyraTitleController
+import app.lyrablock.feature.pet.PetTracker
+import app.lyrablock.util.AbuseBoolean.toInt
+import app.lyrablock.util.DevUtils
+import app.lyrablock.util.TripleInt
+import app.lyrablock.util.item.ItemUtils
+import app.lyrablock.util.render.PlaySoundHelper
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import name.lyrablock.LyraBlockClient
-import name.lyrablock.LyraModule
-import name.lyrablock.base.LyraTitleController
-import name.lyrablock.feature.pet.PetTracker
-import name.lyrablock.util.AbuseBoolean.toInt
-import name.lyrablock.util.DevUtils
-import name.lyrablock.util.TripleInt
-import name.lyrablock.util.item.ItemUtils
-import name.lyrablock.util.render.PlaySoundHelper
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.minecraft.server.MinecraftServer

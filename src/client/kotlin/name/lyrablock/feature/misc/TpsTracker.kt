@@ -1,19 +1,19 @@
-package name.lyrablock.feature.misc
+package app.lyrablock.feature.misc
 
+import app.lyrablock.LyraModule
+import app.lyrablock.LyraSubCommandRegister
+import app.lyrablock.util.ChatSender
+import app.lyrablock.util.LyraIdentifier
 import kotlinx.datetime.Clock
-import name.lyrablock.LyraModule
-import name.lyrablock.LyraSubCommandRegister
-import name.lyrablock.util.ChatSender
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.PacketSender
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayNetworkHandler
-import net.minecraft.util.Identifier
 
 @LyraModule
 object TpsTracker {
@@ -27,10 +27,8 @@ object TpsTracker {
         ServerPlayConnectionEvents.JOIN.register(::onJoinServer)
         // This is a temporary solution. This should be migrated to `Widget` in the future.
         // 3-5 business days.
-        HudLayerRegistrationCallback.EVENT.register {
-            it.attachLayerAfter(
-                IdentifiedLayer.MISC_OVERLAYS, Identifier.of("lyra:tps_test")
-            ) { context, tickDeltaManager ->
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS,
+            LyraIdentifier.of("tps")) { context, _ ->
                 val tps = getTps()
                 context.drawText(
                     MinecraftClient.getInstance().textRenderer,
@@ -41,7 +39,7 @@ object TpsTracker {
                     true
                 )
             }
-        }
+
 
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, registryAccess ->
             LyraSubCommandRegister.register(dispatcher, "tps") {

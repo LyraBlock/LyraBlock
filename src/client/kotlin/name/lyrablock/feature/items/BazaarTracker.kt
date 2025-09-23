@@ -1,5 +1,8 @@
-package name.lyrablock.feature.items
+package app.lyrablock.feature.items
 
+import app.lyrablock.LyraBlockClient
+import app.lyrablock.LyraModule
+import app.lyrablock.util.CachedLoader
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -9,9 +12,6 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
-import name.lyrablock.LyraBlockClient
-import name.lyrablock.LyraModule
-import name.lyrablock.util.CachedLoader
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import kotlin.io.path.div

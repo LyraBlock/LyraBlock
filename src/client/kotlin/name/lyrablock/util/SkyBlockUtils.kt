@@ -1,4 +1,4 @@
-package name.lyrablock.util
+package app.lyrablock.util
 
 object SkyBlockUtils {
     //TODO: Check if in SkyBlock

@@ -1,6 +1,6 @@
-package name.lyrablock.event
+package app.lyrablock.event
 
-import name.lyrablock.mixin.client.HandledScreenMixin
+import app.lyrablock.mixin.client.HandledScreenMixin
 import net.fabricmc.fabric.api.event.EventFactory
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.gui.DrawContext
