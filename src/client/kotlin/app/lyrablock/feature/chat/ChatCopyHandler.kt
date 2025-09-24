@@ -4,13 +4,13 @@ import app.lyrablock.LyraModule
 import app.lyrablock.event.ClickChatEvent
 import app.lyrablock.event.MouseClickData
 import app.lyrablock.mixin.client.ChatHudAccessor
-import app.lyrablock.util.KeyboardUtils.isControlDown
+import app.lyrablock.util.KeyboardUtils
 import net.minecraft.client.MinecraftClient
 
 @LyraModule
 object ChatCopyHandler {
     init {
-        ClickChatEvent.EVENT.register(::onMessageClick)
+        ClickChatEvent.Companion.EVENT.register(::onMessageClick)
     }
 
     private fun getMessageLineIndexByMouse(accessor: ChatHudAccessor, mouseX: Double, mouseY: Double): Int =
@@ -22,7 +22,7 @@ object ChatCopyHandler {
     fun onMessageClick(data: MouseClickData, chatHud: ChatHudAccessor) {
         val (mouseX, mouseY, button) = data
         val client = MinecraftClient.getInstance()
-        if (button != 0 || !isControlDown()) return
+        if (button != 0 || !KeyboardUtils.isControlDown()) return
 
         val lineIndex = getMessageLineIndexByMouse(chatHud, mouseX, mouseY)
         if (lineIndex !in 0 until chatHud.getVisibleMessages().size) return
