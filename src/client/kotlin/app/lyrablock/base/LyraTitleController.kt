@@ -5,7 +5,7 @@ import app.lyrablock.util.LyraIdentifier
 import app.lyrablock.util.MCUtils
 import app.lyrablock.util.render.DrawContextDSL.withPushMatrix
 import app.lyrablock.util.render.MatrixStackDSL.translate
-import app.lyrablock.util.render.MatrixStackDSL.uniformScale2D
+import app.lyrablock.util.render.MatrixStackDSL.uniformScale
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.minecraft.client.gui.DrawContext
@@ -33,7 +33,7 @@ object LyraTitleController {
         val x = (context.scaledWindowWidth - width) / 2
         val y = (context.scaledWindowHeight - height) / 2
         context.withPushMatrix {
-            matrices.translate(x, y).uniformScale2D(size)
+            matrices.translate(x, y).uniformScale(size)
             drawTextWithShadow(textRenderer, currentMessage, 0, -10, 0xFFFFFF)
         }
     }

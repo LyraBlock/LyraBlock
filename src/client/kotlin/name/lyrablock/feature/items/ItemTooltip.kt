@@ -24,6 +24,8 @@ import kotlin.uuid.ExperimentalUuidApi
 /**
  * Handles the display of item value tooltips in the inventory UI.
  * Optimized for SkyBlock items, with scrollable overflow and extra info.
+ *
+ * TODO: this is totally fucked up by 1.21.8
  */
 @Suppress("unused")
 @LyraModule
