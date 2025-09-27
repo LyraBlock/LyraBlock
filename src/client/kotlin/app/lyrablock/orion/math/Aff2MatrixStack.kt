@@ -1,9 +1,9 @@
 package app.lyrablock.orion.math
 
-import app.lyrablock.orion.math.AffineTransformation.Companion.IDENTITY
+import app.lyrablock.orion.math.Aff2Matrix.Companion.IDENTITY
 
-class AffineStack(val maxSize: Int) {
-    val stack = ArrayDeque<AffineTransformation>()
+class Aff2MatrixStack(val maxSize: Int) {
+    val stack = ArrayDeque<Aff2Matrix>()
 
     init {
         reset()
@@ -17,7 +17,7 @@ class AffineStack(val maxSize: Int) {
         stack.addLast(IDENTITY)
     }
 
-    fun peek(): AffineTransformation {
+    fun peek(): Aff2Matrix {
         return stack.last()
     }
 
@@ -34,7 +34,7 @@ class AffineStack(val maxSize: Int) {
     }
 
 
-    fun translate(tx: Number, ty: Number) : AffineStack {
+    fun translate(tx: Number, ty: Number) : Aff2MatrixStack {
         val current = stack.removeLast()
         val translationMatrix = IDENTITY.copy(
             tx = tx.toFloat(),
@@ -48,10 +48,10 @@ class AffineStack(val maxSize: Int) {
         return this
     }
 
-    fun scale(sx: Number, sy: Number) : AffineStack {
+    fun scale(sx: Number, sy: Number) : Aff2MatrixStack {
         val current = stack.removeLast()
 
-        val scaleMatrix = AffineTransformation(
+        val scaleMatrix = Aff2Matrix(
             sx.toFloat(), 0, 0,
             0, sy.toFloat(), 0
         )
