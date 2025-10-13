@@ -2,9 +2,9 @@ package app.lyrablock.lyra.feature.misc
 
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.util.item.ItemUtils.getCustomData
-import app.lyrablock.lyra.util.math.LyraColor
 import app.lyrablock.lyra.util.render.LyraRenderLayer
 import app.lyrablock.lyra.util.render.WorldRenderDSL.renderBlockFilled
+import app.lyrablock.orion.math.OrionColor
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
 import net.minecraft.client.MinecraftClient
@@ -18,7 +18,7 @@ import net.minecraft.world.RaycastContext
 
 @LyraModule
 object AotvHelper {
-    private val OVERLAY_COLOR = LyraColor.argb(0xff8133d9).withAlpha(0.3f)
+    private val OVERLAY_COLOR = OrionColor.argb(0xff8133d9).withAlpha(0.3f)
 
     init {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(::render)

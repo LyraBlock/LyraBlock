@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.util.render
 
-import app.lyrablock.lyra.util.math.LyraColor
 import app.lyrablock.lyra.util.math.LyraVector
+import app.lyrablock.orion.math.OrionColor
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexConsumerProvider
@@ -20,7 +20,7 @@ object WorldRenderDSL {
         matrices.pop()
     }
 
-    fun WorldRenderContext.renderLine(layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: LyraColor) {
+    fun WorldRenderContext.renderLine(layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: OrionColor) {
         val matrices = this.matrixStack() ?: return
         val consumers = this.consumers() as VertexConsumerProvider.Immediate
         val buffer = consumers.getBuffer(layer)
@@ -38,7 +38,7 @@ object WorldRenderDSL {
     }
 
     fun WorldRenderContext.renderOutline(
-        layer: RenderLayer, x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double, color: LyraColor
+        layer: RenderLayer, x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double, color: OrionColor
     ) {
         val matrices = this.matrixStack() ?: return
 
@@ -53,17 +53,17 @@ object WorldRenderDSL {
         }
     }
 
-    fun WorldRenderContext.renderOutline(layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: LyraColor) =
+    fun WorldRenderContext.renderOutline(layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: OrionColor) =
         renderOutline(layer, p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, color)
 
-    fun WorldRenderContext.renderBlockOutline(layer: RenderLayer, x: Int, y: Int, z: Int, color: LyraColor) {
+    fun WorldRenderContext.renderBlockOutline(layer: RenderLayer, x: Int, y: Int, z: Int, color: OrionColor) {
         val p1 = LyraVector.Companion.of(x, y, z)
         val p2 = p1 + LyraVector.Companion.UNIT_CUBE
         renderOutline(layer, p1, p2, color)
     }
 
     // This waypoint is left for mining waypoints, which should be integer.
-    fun WorldRenderContext.renderLineFromCrosshair(layer: RenderLayer, x: Int, y: Int, z: Int, color: LyraColor) {
+    fun WorldRenderContext.renderLineFromCrosshair(layer: RenderLayer, x: Int, y: Int, z: Int, color: OrionColor) {
         // Translate to the center of the block.
         val target = LyraVector.Companion.of(x + .5, y + .5, z + .5)
         val camera = this.camera()
@@ -89,7 +89,7 @@ object WorldRenderDSL {
         x2: Double,
         y2: Double,
         z2: Double,
-        color: LyraColor
+        color: OrionColor
     ) {
         val matrices = this.matrixStack() ?: return
 
@@ -104,12 +104,12 @@ object WorldRenderDSL {
     }
 
     fun WorldRenderContext.renderFilled(
-        layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: LyraColor
+        layer: RenderLayer, p1: LyraVector, p2: LyraVector, color: OrionColor
     ) {
         renderFilled(layer, p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, color)
     }
 
-    fun WorldRenderContext.renderBlockFilled(layer: RenderLayer, x: Int, y: Int, z: Int, color: LyraColor) {
+    fun WorldRenderContext.renderBlockFilled(layer: RenderLayer, x: Int, y: Int, z: Int, color: OrionColor) {
         val p1 = LyraVector.Companion.of(x, y, z)
         val p2 = p1 + LyraVector.UNIT_CUBE
         renderFilled(layer, p1, p2, color)

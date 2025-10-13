@@ -1,19 +1,19 @@
 package app.lyrablock.orion.components
 
-import app.lyrablock.lyra.util.render.DrawContextDSL.withPushMatrix
 import app.lyrablock.lyra.util.render.MatrixStackDSL.uniformScale
 import app.lyrablock.orion.Constraints
 import app.lyrablock.orion.OrionComponent
 import app.lyrablock.orion.Size
+import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.text.OrderedText
 import net.minecraft.text.Text
 
 @Suppress("unused")
-class TextView(val text: OrderedText, val style: TextStyle = TextStyle.DEFAULT) : OrionComponent {
-    constructor(text: Text, style: TextStyle = TextStyle.DEFAULT) : this(text.asOrderedText(), style)
-    constructor(text: String, style: TextStyle = TextStyle.DEFAULT) : this(Text.of(text), style)
+class TextView(val text: OrderedText, val style: Style = Style.DEFAULT) : OrionComponent {
+    constructor(text: Text, style: Style = Style.DEFAULT) : this(text.asOrderedText(), style)
+    constructor(text: String, style: Style = Style.DEFAULT) : this(Text.of(text), style)
 
     val textRenderer = MinecraftClient.getInstance().textRenderer!!
     val fontHeight = textRenderer.fontHeight
@@ -31,13 +31,16 @@ class TextView(val text: OrderedText, val style: TextStyle = TextStyle.DEFAULT) 
         }
     }
 
-    data class TextStyle(
+    data class Style(
         var shadowed: Boolean = true,
         var scale: Float = 1f,
         var color: Int = 0xFFFFFFFF.toInt()
     ) {
+        fun styled(text: String) = TextView(text)
+        fun styled(text: Text) = TextView(text)
+
         companion object {
-            val DEFAULT = TextStyle()
+            val DEFAULT = Style()
         }
     }
 }

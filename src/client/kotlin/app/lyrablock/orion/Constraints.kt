@@ -20,6 +20,7 @@ open class Constraints(val min: Size, val max: Size) {
     /* Methods */
     fun constrain(size: Size) = size.coerceIn(min, max)
     fun copy() = Constraints(min, max)
+    fun isStrict() = min == max
 
     companion object : Constraints(Size.ZERO, Size.INFINITY) {
         /**
