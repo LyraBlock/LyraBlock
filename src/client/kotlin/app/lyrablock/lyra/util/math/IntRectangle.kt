@@ -18,6 +18,7 @@ private constructor(val x1: Int, val y1: Int, val x2: Int, val y2: Int) {
     companion object {
         fun corners(x1: Int, y1: Int, x2: Int, y2: Int) = IntRectangle(x1, y1, x2, y2)
         fun corners(topLeft: IntPair, bottomRight: IntPair) = IntRectangle(topLeft.first, topLeft.second, bottomRight.first, bottomRight.second)
+        fun corners(topLeft: IntPoint, bottomRight: IntPoint) = IntRectangle(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
         fun sized(x: Int, y: Int, width: Int, height: Int) = IntRectangle(x, y, x + width, y + height)
     }
 }

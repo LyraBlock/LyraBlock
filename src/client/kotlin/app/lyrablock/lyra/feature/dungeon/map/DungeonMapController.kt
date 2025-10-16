@@ -48,7 +48,9 @@ object DungeonMapController {
         val state = FilledMapItem.getMapState(mapId, client.world) ?: return
         val colors = state.colors
         val start = colors.indexOf(RoomType.START.color)
-        mapSpec = IntSize(MapScanner.getAxisSize(start % 128), MapScanner.getAxisSize(start /  128))
+        val last = colors.lastIndexOf(RoomType.START.color)
+        mapSpec = IntSize(MapScanner.getAxisSize(start % 128), MapScanner.getAxisSize(start / 128))
+        mapStartingRoom = IntRectangle.corners(MapScanner.toPoint(start), MapScanner.toPoint(last))
     }
 
     fun fetchMapId(client: MinecraftClient) {

@@ -3,7 +3,6 @@ package app.lyrablock.lyra.feature.dungeon.map
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomData
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.math.IntPoint
-import app.lyrablock.lyra.util.math.IntVec2
 
 object MapScanner {
     const val CANVAS_SIZE = 128
@@ -11,7 +10,7 @@ object MapScanner {
     const val CONNECTOR_SIZE = 4
     const val STEP_SIZE = CONNECTOR_SIZE + ROOM_SIZE
 
-    fun toPoint(index: Int) = IntVec2.of((index / CANVAS_SIZE) to (index % CANVAS_SIZE))
+    fun toPoint(index: Int) = IntPoint((index % CANVAS_SIZE), (index / CANVAS_SIZE))
 
 
     // 6-types have 5-pixel padding on the left, and
