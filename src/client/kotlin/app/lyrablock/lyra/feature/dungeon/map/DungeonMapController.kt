@@ -4,9 +4,15 @@ import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.event.MapEvents
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.SkyblockUtils
+import app.lyrablock.lyra.util.math.IntPoint
 import app.lyrablock.lyra.util.math.IntRectangle
 import app.lyrablock.lyra.util.math.IntSize
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.component.DataComponentTypes
@@ -24,6 +30,11 @@ object DungeonMapController {
     var physicalStartingRoom: IntRectangle? = null
     var mapSpec: IntSize? = null
     var mapData: MapData? = null
+    @Volatile
+    var anchor: Map<IntPoint, IntPoint> = emptyMap()
+
+    val mapUpdateScope = CoroutineScope(Dispatchers.Default + Job())
+    val mapUpdateMutex = Mutex()
 
     init {
         MapEvents.MAP_UPDATE_APPLIED.register(::onMapUpdate)
@@ -31,15 +42,26 @@ object DungeonMapController {
         ClientTickEvents.END_CLIENT_TICK.register(::fetchStartingRoom)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
+//    @OptIn(DelicateCoroutinesApi::class)
     @Suppress("unused_parameter")
     fun onMapUpdate(packet: MapUpdateS2CPacket, state: MapState) {
         if (packet.mapId != mapId) return
-        val updateData = packet.updateData.getOrNull() ?: return
+    packet.updateData.getOrNull() ?: return
         if (mapSpec == null) return
-//        GlobalScope.launch {
-        mapData = MapScanner.scanMap(state.colors, mapSpec!!.width, mapSpec!!.height)
-//        }
+
+        mapUpdateScope.launch {
+            mapUpdateMutex.withLock {
+                mapData = MapScanner.scanMap(state.colors, mapSpec!!.width, mapSpec!!.height)
+                val newAnchor = mutableMapOf<IntPoint, IntPoint>()
+                mapData!!.rooms.forEach { room ->
+                    val anchor = room.area.minWith(compareBy<IntPoint> { it.x }.thenBy { it.y })
+                    room.area.forEach { part ->
+                        newAnchor[part] = anchor
+                    }
+                }
+                anchor = newAnchor
+            }
+        }
     }
 
     fun fetchStartingRoom(client: MinecraftClient) {
