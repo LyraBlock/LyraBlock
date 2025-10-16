@@ -1,6 +1,8 @@
 package app.lyrablock.lyra.util
 
-object SkyBlockUtils {
+object SkyblockUtils {
     //TODO: Check if in SkyBlock
     fun isInSkyBlock() = true
+    //TODO: Check if in dg
+    fun isInDungeons() = true
 }

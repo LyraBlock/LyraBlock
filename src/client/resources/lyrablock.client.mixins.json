@@ -5,6 +5,7 @@
   "client": [
     "ChatHudAccessor",
     "ChatScreenMixin",
+    "ClientPlayNetworkHandlerMixin",
     "HandledScreenMixin",
     "ItemStackMixin",
     "KeyBindingMixin",
