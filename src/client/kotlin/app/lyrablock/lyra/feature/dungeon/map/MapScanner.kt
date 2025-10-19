@@ -1,6 +1,6 @@
 package app.lyrablock.lyra.feature.dungeon.map
 
-import app.lyrablock.lyra.feature.dungeon.map.room.RoomData
+import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.math.IntPoint
 
@@ -36,7 +36,7 @@ object MapScanner {
         return 0
     }
 
-    fun scanMap(rawData: ByteArray, xAxisSize: Int, yAxisSize: Int): MapData {
+    fun scanMap(rawData: ByteArray, xAxisSize: Int, yAxisSize: Int): Array<Array<LogicalRoomCell?>> {
         check(xAxisSize != 0 && yAxisSize != 0)
 
         fun colorAtPixel(x: Int, y: Int): RoomType? {
@@ -46,50 +46,46 @@ object MapScanner {
             return RoomType.fromColor(rawData[idx])
         }
 
-        val connections = mutableSetOf<Pair<IntPoint, IntPoint>>()
-        val roomData = mutableMapOf<IntPoint, RoomData>()
+        val cells = LogicalRoomCell.makeNulls(xAxisSize, yAxisSize)
 
         val paddingX = padding[xAxisSize]!!
         val paddingY = padding[yAxisSize]!!
 
         for (x in 0 until xAxisSize) for (y in 0 until yAxisSize) {
-            val thisPoint = IntPoint(x, y)
-            val leftPoint = IntPoint(x - 1, y)
-            val upPoint = IntPoint(x, y - 1)
 
             val pixelX = x * STEP_SIZE + paddingX
             val pixelY = y * STEP_SIZE + paddingY
             val type = colorAtPixel(pixelX, pixelY) ?: continue
+            val current = LogicalRoomCell(rank = y * xAxisSize + x, type)
+            cells[y][x] = current
+
+            val left = runCatching { cells[y][x - 1] }.getOrNull()
+            val up = runCatching { cells[y - 1][x] }.getOrNull()
 
             // 1. Connections
             if (type == RoomType.TRANSPARENT) continue
             if (colorAtPixel(pixelX - 1, pixelY + 7) != RoomType.TRANSPARENT) {
-                connections.add(thisPoint to leftPoint)
+                current.connect(left!!)
             }
             if (colorAtPixel(pixelX + 7, pixelY - 1) != RoomType.TRANSPARENT) {
-                connections.add(thisPoint to upPoint)
+                current.connect(up!!)
             }
 
             // 2. Room areas
-            if (type != RoomType.REGULAR) {
-                roomData[thisPoint] = RoomData(type, mutableSetOf(thisPoint))
-                continue
-            }
+            if (type != RoomType.REGULAR) continue
 
-            // Regular rooms: check for merging with left or top regular rooms
+            // Regular rooms: check for merging with left or up regular rooms
             if (colorAtPixel(pixelX - 1, pixelY) == RoomType.REGULAR) {
-                roomData[leftPoint]?.area?.add(thisPoint)
+                current.union(left!!)
                 continue
             }
 
             if (colorAtPixel(pixelX, pixelY - 1) == RoomType.REGULAR) {
-                roomData[upPoint]?.area?.add(thisPoint)
+                current.union(up!!)
                 continue
             }
-
-            roomData[thisPoint] = RoomData(RoomType.REGULAR, mutableSetOf(thisPoint))
         }
 
-        return MapData(roomData.values.toList(), connections.toSet())
+        return cells
     }
 }

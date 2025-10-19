@@ -2,9 +2,9 @@ package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.event.MapEvents
+import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.SkyblockUtils
-import app.lyrablock.lyra.util.math.IntPoint
 import app.lyrablock.lyra.util.math.IntRectangle
 import app.lyrablock.lyra.util.math.IntSize
 import kotlinx.coroutines.CoroutineScope
@@ -29,9 +29,7 @@ object DungeonMapController {
     var mapStartingRoom: IntRectangle? = null
     var physicalStartingRoom: IntRectangle? = null
     var mapSpec: IntSize? = null
-    var mapData: MapData? = null
-    @Volatile
-    var anchor: Map<IntPoint, IntPoint> = emptyMap()
+    var roomCells: Array<Array<LogicalRoomCell?>>? = null
 
     val mapUpdateScope = CoroutineScope(Dispatchers.Default + Job())
     val mapUpdateMutex = Mutex()
@@ -46,20 +44,12 @@ object DungeonMapController {
     @Suppress("unused_parameter")
     fun onMapUpdate(packet: MapUpdateS2CPacket, state: MapState) {
         if (packet.mapId != mapId) return
-    packet.updateData.getOrNull() ?: return
+        packet.updateData.getOrNull() ?: return
         if (mapSpec == null) return
 
         mapUpdateScope.launch {
             mapUpdateMutex.withLock {
-                mapData = MapScanner.scanMap(state.colors, mapSpec!!.width, mapSpec!!.height)
-                val newAnchor = mutableMapOf<IntPoint, IntPoint>()
-                mapData!!.rooms.forEach { room ->
-                    val anchor = room.area.minWith(compareBy<IntPoint> { it.x }.thenBy { it.y })
-                    room.area.forEach { part ->
-                        newAnchor[part] = anchor
-                    }
-                }
-                anchor = newAnchor
+                roomCells = MapScanner.scanMap(state.colors, mapSpec!!.width, mapSpec!!.height)
             }
         }
     }
