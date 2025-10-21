@@ -1,7 +1,8 @@
 package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
-import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
+import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
+import app.lyrablock.lyra.util.ArrayUtils.chunked
 import app.lyrablock.lyra.util.math.IntPoint
 
 object MapScanner {
@@ -29,58 +30,47 @@ object MapScanner {
      * @return The size of the axis, 5 or 6. If the coordinate is invalid, return 0.
      */
     fun getAxisSize(coordinate: Int): Int {
-        val pad6 = padding[6]!!
-        val pad5 = padding[5]!!
-        if ((coordinate - pad6) % STEP_SIZE == 0) return 6
-        if ((coordinate - pad5) % STEP_SIZE == 0) return 5
-        return 0
+        return padding.toList().firstOrNull { (_, pad) -> (coordinate - pad) % STEP_SIZE == 0 }?.first ?: 0
     }
 
-    fun scanMap(rawData: ByteArray, xAxisSize: Int, yAxisSize: Int): Array<Array<LogicalRoomCell?>> {
+    fun scanMap(rawColors: ByteArray, xAxisSize: Int, yAxisSize: Int): Array<Array<LogicalRoomCell?>> {
         check(xAxisSize != 0 && yAxisSize != 0)
-
-        fun colorAtPixel(x: Int, y: Int): RoomType? {
-            if (x < 0 || y < 0 || x >= CANVAS_SIZE || y >= CANVAS_SIZE) return RoomType.TRANSPARENT
-            val idx = x + y * CANVAS_SIZE
-            if (idx >= rawData.size) return RoomType.TRANSPARENT
-            return RoomType.fromColor(rawData[idx])
-        }
+        val colors = rawColors.chunked(CANVAS_SIZE)
 
         val cells = LogicalRoomCell.makeNulls(xAxisSize, yAxisSize)
 
         val paddingX = padding[xAxisSize]!!
         val paddingY = padding[yAxisSize]!!
 
-        for (x in 0 until xAxisSize) for (y in 0 until yAxisSize) {
+        for (cellX in 0 until xAxisSize) for (cellY in 0 until yAxisSize) {
 
-            val pixelX = x * STEP_SIZE + paddingX
-            val pixelY = y * STEP_SIZE + paddingY
-            val type = colorAtPixel(pixelX, pixelY) ?: continue
-            val current = LogicalRoomCell(rank = y * xAxisSize + x, type)
-            cells[y][x] = current
+            val x = cellX * STEP_SIZE + paddingX
+            val y = cellY * STEP_SIZE + paddingY
+            val type = colors.getOrNull(y)?.getOrNull(x)?.let { RoomColorType.fromColor(it) } ?: continue
+            val current = LogicalRoomCell(rank = cellY * xAxisSize + cellX, type)
+            cells[cellY][cellX] = current
 
-            val left = runCatching { cells[y][x - 1] }.getOrNull()
-            val up = runCatching { cells[y - 1][x] }.getOrNull()
+            val left = cells.getOrNull(cellY)?.getOrNull(cellX - 1)
+            val up = cells.getOrNull(cellY - 1)?.getOrNull(cellX)
 
             // 1. Connections
-            if (type == RoomType.TRANSPARENT) continue
-            if (colorAtPixel(pixelX - 1, pixelY + 7) != RoomType.TRANSPARENT) {
+            if (RoomColorType.fromColor(colors[y + 7][x - 1]) != null)
                 current.connect(left!!)
-            }
-            if (colorAtPixel(pixelX + 7, pixelY - 1) != RoomType.TRANSPARENT) {
-                current.connect(up!!)
-            }
 
-            // 2. Room areas
-            if (type != RoomType.REGULAR) continue
+            if (RoomColorType.fromColor(colors[y - 1][x + 7]) != null)
+                current.connect(up!!)
+
+
+            // 2. Merging regular rooms
+            if (type != RoomColorType.REGULAR) continue
 
             // Regular rooms: check for merging with left or up regular rooms
-            if (colorAtPixel(pixelX - 1, pixelY) == RoomType.REGULAR) {
+            if (colors[y][x - 1] == RoomColorType.REGULAR.color) {
                 current.union(left!!)
                 continue
             }
 
-            if (colorAtPixel(pixelX, pixelY - 1) == RoomType.REGULAR) {
+            if (colors[y - 1][x] == RoomColorType.REGULAR.color) {
                 current.union(up!!)
                 continue
             }

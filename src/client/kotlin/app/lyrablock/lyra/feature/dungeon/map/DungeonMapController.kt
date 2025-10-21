@@ -3,7 +3,7 @@ package app.lyrablock.lyra.feature.dungeon.map
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.event.MapEvents
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
-import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
+import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
 import app.lyrablock.lyra.util.SkyblockUtils
 import app.lyrablock.lyra.util.math.IntRectangle
 import app.lyrablock.lyra.util.math.IntSize
@@ -59,8 +59,8 @@ object DungeonMapController {
         if (mapSpec != null) return
         val state = FilledMapItem.getMapState(mapId, client.world) ?: return
         val colors = state.colors
-        val start = colors.indexOf(RoomType.START.color)
-        val last = colors.lastIndexOf(RoomType.START.color)
+        val start = colors.indexOf(RoomColorType.START.color)
+        val last = colors.lastIndexOf(RoomColorType.START.color)
         mapSpec = IntSize(MapScanner.getAxisSize(start % 128), MapScanner.getAxisSize(start / 128))
         mapStartingRoom = IntRectangle.corners(MapScanner.toPoint(start), MapScanner.toPoint(last))
     }
