@@ -11,6 +11,10 @@ annotation class LyraModule() {
             val annotated = reflections.getTypesAnnotatedWith(LyraModule::class.java)
 
             annotated.forEach {
+                if (it.isAnnotationPresent(ByMixin::class.java)) {
+                    // Works as `continue`.
+                    return@forEach
+                }
                 try {
                     val kClass = it.kotlin
                     // Here calls `init`.
@@ -26,4 +30,8 @@ annotation class LyraModule() {
             }
         }
     }
+
+    @Target(AnnotationTarget.CLASS)
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class ByMixin
 }
