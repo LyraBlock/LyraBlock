@@ -2,7 +2,7 @@ package app.lyrablock.lyra.feature.chat
 
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.util.MCUtils
-import app.lyrablock.lyra.util.chat.HypixelChatUtils
+import app.lyrablock.lyra.util.chat.HypixelChatModifierWrapper
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 
 @LyraModule
@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 object CoordinatesSender {
     init {
         ClientSendMessageEvents.MODIFY_CHAT.register(::modifyChat)
-        ClientSendMessageEvents.MODIFY_COMMAND.register(HypixelChatUtils.getModifierForCommands(::modifyChat))
+        ClientSendMessageEvents.MODIFY_COMMAND.register(HypixelChatModifierWrapper(::modifyChat)::invoke)
     }
 
     fun getCoordinates(): String {
