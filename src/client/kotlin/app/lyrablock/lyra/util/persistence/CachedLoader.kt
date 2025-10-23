@@ -1,7 +1,8 @@
-package app.lyrablock.lyra.util
+package app.lyrablock.lyra.util.persistence
 
 import app.lyrablock.lyra.LyraBlockClient
 import app.lyrablock.lyra.util.FileDSL.ensureFile
+import app.lyrablock.lyra.util.TimeMarker
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.utils.io.*
@@ -34,6 +35,7 @@ class CachedLoader<T : Any>(
     init {
         local.ensureFile()
         data = loadLocalData()
+        // todo: global scope bad!!!!!!1!!
         if (data == null) GlobalScope.launch {
             data = fetchAndCache()
         }

@@ -6,7 +6,6 @@ import app.lyrablock.lyra.base.LyraTitleController
 import app.lyrablock.lyra.feature.pet.PetTracker
 import app.lyrablock.lyra.util.AbuseBoolean.toInt
 import app.lyrablock.lyra.util.DevUtils
-import app.lyrablock.lyra.util.TripleInt
 import app.lyrablock.lyra.util.item.ItemUtils
 import app.lyrablock.lyra.util.render.PlaySoundHelper
 import kotlinx.datetime.Clock
@@ -28,14 +27,14 @@ object PickaxeAbilityCooldownTracker {
      * @param cooldown The ability cooldown, corresponds to 3 levels.
      * @param cuteName The name shown in client (what we show to the player).
      */
-    data class PickaxeAbilityData(val name: String, val cooldown: TripleInt, val cuteName: String = name)
+    data class PickaxeAbilityData(val name: String, val cooldown: PickaxeLeveled, val cuteName: String = name)
 
-    val MINING_SPEED_BOOST = PickaxeAbilityData("Mining Speed Boost", TripleInt.triple(120))
-    val ANOMALOUS_DESIRE = PickaxeAbilityData("Anomalous Desire", TripleInt(120, 110, 100))
-    val PICKOBULUS = PickaxeAbilityData("Pickobulus", TripleInt(60, 50, 40))
-    val MANIAC_MINER = PickaxeAbilityData("Maniac Miner", TripleInt.triple(60))
-    val GEMSTONE_INFUSION = PickaxeAbilityData("Gemstone Infusion", TripleInt.triple(120))
-    val SHEER_FORCE = PickaxeAbilityData("Sheer Force", TripleInt.triple(120))
+    val MINING_SPEED_BOOST = PickaxeAbilityData("Mining Speed Boost", PickaxeLeveled.triple(120))
+    val ANOMALOUS_DESIRE = PickaxeAbilityData("Anomalous Desire", PickaxeLeveled(120, 110, 100))
+    val PICKOBULUS = PickaxeAbilityData("Pickobulus", PickaxeLeveled(60, 50, 40))
+    val MANIAC_MINER = PickaxeAbilityData("Maniac Miner", PickaxeLeveled.triple(60))
+    val GEMSTONE_INFUSION = PickaxeAbilityData("Gemstone Infusion", PickaxeLeveled.triple(120))
+    val SHEER_FORCE = PickaxeAbilityData("Sheer Force", PickaxeLeveled.triple(120))
     val ABILITY_LIST = arrayOf(
         MINING_SPEED_BOOST,
         ANOMALOUS_DESIRE,

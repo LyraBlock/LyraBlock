@@ -2,7 +2,7 @@ package app.lyrablock.lyra.feature.items
 
 import app.lyrablock.lyra.LyraBlockClient
 import app.lyrablock.lyra.LyraModule
-import app.lyrablock.lyra.util.CachedLoader
+import app.lyrablock.lyra.util.persistence.CachedLoader
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async

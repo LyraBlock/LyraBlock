@@ -1,10 +1,10 @@
 package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.LyraModule
+import app.lyrablock.lyra.base.HypixelInfo
 import app.lyrablock.lyra.event.MapEvents
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
-import app.lyrablock.lyra.util.SkyblockUtils
 import app.lyrablock.lyra.util.math.IntRectangle
 import app.lyrablock.lyra.util.math.IntSize
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +67,7 @@ object DungeonMapController {
 
     fun fetchMapId(client: MinecraftClient) {
         // If we're not in dungeons, ensure we don't keep a stale map id.
-        if (!SkyblockUtils.isInDungeons()) {
+        if (!HypixelInfo.isInDungeons) {
             if (mapId != null) mapId = null
             return
         }

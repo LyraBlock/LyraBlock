@@ -1,9 +1,12 @@
-package app.lyrablock.lyra.util
+package app.lyrablock.lyra.feature.mining
 
 import kotlinx.serialization.Serializable
 
+/**
+ * Used to describe values for pickaxes that have 3 different levels,
+ */
 @Serializable
-data class TripleInt(val first: Int, val second: Int, val third: Int) {
+data class PickaxeLeveled(val first: Int, val second: Int, val third: Int) {
     fun toTriple() = Triple(first, second, third)
 
     operator fun get(index: Int): Int = when(index) {
@@ -14,6 +17,6 @@ data class TripleInt(val first: Int, val second: Int, val third: Int) {
     }
 
     companion object {
-        fun triple(value: Int) = TripleInt(value, value, value)
+        fun triple(value: Int) = PickaxeLeveled(value, value, value)
     }
 }
