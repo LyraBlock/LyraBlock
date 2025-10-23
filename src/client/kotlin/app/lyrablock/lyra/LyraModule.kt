@@ -2,15 +2,18 @@ package app.lyrablock.lyra
 
 import org.reflections.Reflections
 
+/**
+ * Object with this annotated will be loaded upon client initializes.
+ */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class LyraModule() {
+annotation class LyraModule(val priority: Int = 0) {
     companion object {
         fun load(packageName: String) {
             val reflections = Reflections(packageName)
             val annotated = reflections.getTypesAnnotatedWith(LyraModule::class.java)
 
-            for (target in annotated) {
+            for (target in annotated.sortedBy { it.getAnnotation(LyraModule::class.java).priority }) {
                 if (target.isAnnotationPresent(ByMixin::class.java))
                     continue
 
