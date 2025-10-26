@@ -1,19 +1,15 @@
 package app.lyrablock.lyra.feature.dungeon.map.room
 
-import net.minecraft.block.MapColor
-
 enum class RoomColorType(val color: Byte = 0) {
-    START(MapColor.DARK_GREEN),
-    REGULAR(MapColor.BROWN),
-    BLOOD(MapColor.RED),
-    PUZZLE(MapColor.PURPLE),
-    FAIRY(MapColor.PINK),
-    TRAP(MapColor.ORANGE),
-    MINIBOSS(MapColor.YELLOW),
+    START(30),
+    REGULAR(63),
+    BLOOD(18),
+    PUZZLE(66),
+    FAIRY(82),
+    TRAP(62),
+    MINIBOSS(74),
     /** Marks an unlocked room, usually shown as a question mark on the map. */
-    UNDISCOVERED(MapColor.GRAY);
-
-    constructor(color: MapColor) : this(color.id.toByte())
+    UNDISCOVERED(85);
 
     companion object {
         private val colorToType = entries.reversed().associateBy { it.color }
