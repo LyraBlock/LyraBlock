@@ -1,81 +1,71 @@
 package app.lyrablock.lyra.feature.dungeon.map
 
+import app.lyrablock.lyra.feature.dungeon.map.MapSpecification.Companion.CONNECTOR_SIZE
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
 import app.lyrablock.lyra.util.ArrayUtils.chunked
-import app.lyrablock.lyra.util.math.IntPoint
 
 object MapScanner {
-    const val CANVAS_SIZE = 128
-    const val ROOM_SIZE = 16
-    const val CONNECTOR_SIZE = 4
-    const val STEP_SIZE = CONNECTOR_SIZE + ROOM_SIZE
-
-    fun toPoint(index: Int) = IntPoint((index % CANVAS_SIZE), (index / CANVAS_SIZE))
-
-
-    // 6-types have 5-pixel padding on the left, and
-    // 5-types have 18-pixel padding on the left.
-    // Map keys are axis sizes -> left padding (connector compensated)
-    val padding = mapOf(6 to 5 - CONNECTOR_SIZE, 5 to 18 - CONNECTOR_SIZE)
+    val REGULAR_COLOR = RoomColorType.REGULAR.color
 
     /**
-     * A dungeon map is one of 4x4, 5x5 (sometimes, a puzzle room takes a row/column, making it 5x6), or 6x6.
-     * Here, we consider 4x4 the same as 6x6. They differ little in our processing.
+     * Scan the color list with the map specification, turning them into logical cells.
      *
-     * Because we know that the content of Magical Map is always centered, we can tell if the rooms in an axis
-     * (horizon or vertical) is 5 or 6 by checking the coordinate on the axis, of the top-left most pixel,
-     * of one room.
+     * **Note**. This function has a side effect that modifies the content of `data`.
      *
-     * @return The size of the axis, 5 or 6. If the coordinate is invalid, return 0.
+     * @param data The room data. **Its content will be modified**.
      */
-    fun getAxisSize(coordinate: Int): Int {
-        return padding.toList().firstOrNull { (_, pad) -> (coordinate - pad) % STEP_SIZE == 0 }?.first ?: 0
-    }
+    fun scanMap(data: Array<Array<LogicalRoomCell?>>, rawColors: ByteArray, specification: MapSpecification) {
+        val cellSize = specification.cellSize
+        val colors = rawColors.chunked(128)
+        val (startingX, startingY) = specification.startingRoom
+        val (maxI, maxJ) = data.size to data[0].size
 
-    fun scanMap(rawColors: ByteArray, xAxisSize: Int, yAxisSize: Int): Array<Array<LogicalRoomCell?>> {
-        check(xAxisSize != 0 && yAxisSize != 0)
-        val colors = rawColors.chunked(CANVAS_SIZE)
+        yIteration@ for (i in 1 until maxI) xIteration@ for (j in 1 until maxJ) {
+            // Have you learned that Fencepost Problem?
+            // (x, y) is the pixel position, (i, j) is the cell position on its grid.
+            val x = startingX - CONNECTOR_SIZE + j * (cellSize + CONNECTOR_SIZE)
+            val y = startingY - CONNECTOR_SIZE + i * (cellSize + CONNECTOR_SIZE)
 
-        val cells = LogicalRoomCell.makeNulls(xAxisSize, yAxisSize)
+            // Do not go too far
+            if (y > 128) continue@yIteration
+            if (x > 128) continue@xIteration
+            if (data[i][j] != null) continue
+            val color = colors[y][x]
+            val type = RoomColorType.fromColor(color) ?: continue
 
-        val paddingX = padding[xAxisSize]!!
-        val paddingY = padding[yAxisSize]!!
+            // Nearby cells. We assert they are not null, or here is a critical problem.
+            val up = data[i][j - 1]!!
+            val current = data[i][j]!!
+            val left = data[i - 1][j]!!
 
-        for (cellX in 0 until xAxisSize) for (cellY in 0 until yAxisSize) {
-
-            val x = cellX * STEP_SIZE + paddingX
-            val y = cellY * STEP_SIZE + paddingY
-            val type = colors.getOrNull(y)?.getOrNull(x)?.let { RoomColorType.fromColor(it) } ?: continue
-            val current = LogicalRoomCell(rank = cellY * xAxisSize + cellX, type)
-            cells[cellY][cellX] = current
-
-            val left = cells.getOrNull(cellY)?.getOrNull(cellX - 1)
-            val up = cells.getOrNull(cellY - 1)?.getOrNull(cellX)
-
-            // 1. Connections
-            if (RoomColorType.fromColor(colors[y + 7][x - 1]) != null)
-                current.connect(left!!)
-
-            if (RoomColorType.fromColor(colors[y - 1][x + 7]) != null)
-                current.connect(up!!)
-
-
-            // 2. Merging regular rooms
-            if (type != RoomColorType.REGULAR) continue
-
-            // Regular rooms: check for merging with left or up regular rooms
-            if (colors[y][x - 1] == RoomColorType.REGULAR.color) {
-                current.union(left!!)
-                continue
+            if (type != RoomColorType.REGULAR) {
+                // All non-regular rooms is 1-cell wide.
+                data[i][j] = LogicalRoomCell(j * maxJ + i, type)
+            } else {
+                // Try to merge regular rooms.
+                if (colors[y][x - 1] == REGULAR_COLOR) {
+                    current.union(left)
+                }
+                if (colors[y - 1][x] == REGULAR_COLOR)
+                    current.union(up)
             }
 
-            if (colors[y - 1][x] == RoomColorType.REGULAR.color) {
-                current.union(up!!)
-                continue
+            // Next, try to connect rooms.
+
+            // How many pixels will we offset for searching?
+            val seekDelta = cellSize / 2
+
+            if (RoomColorType.fromColor(colors[y - 1][x + seekDelta]) != null
+                && current.find() != up.find()
+            ) {
+                current.connect(up)
+            }
+            if (RoomColorType.fromColor(colors[y + seekDelta][x - 1]) != null
+                && current.find() != left.find()
+            ) {
+                current.connect(left)
             }
         }
-
-        return cells
     }
 }

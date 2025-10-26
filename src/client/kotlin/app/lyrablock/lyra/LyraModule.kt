@@ -4,6 +4,9 @@ import org.reflections.Reflections
 
 /**
  * Object with this annotated will be loaded upon client initializes.
+ * This is used for event registration.
+ *
+ * The methods in modules should be `private` whenever they can.
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)

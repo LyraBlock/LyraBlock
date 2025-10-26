@@ -39,10 +39,10 @@ dependencies {
     implementation("org.reflections:reflections:0.10.2")
     implementation("io.ktor:ktor-client-core:${ktor_version}")
     implementation("io.ktor:ktor-client-cio:${ktor_version}")
-    implementation("net.hypixel:mod-api:1.0.1")
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
     mappings("net.fabricmc:yarn:${project.property("yarn_mappings")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
+    modImplementation("net.hypixel:mod-api:1.0.1")
 
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("fabric_kotlin_version")}")
