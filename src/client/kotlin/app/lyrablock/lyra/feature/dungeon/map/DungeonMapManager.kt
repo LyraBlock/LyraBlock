@@ -34,14 +34,14 @@ object DungeonMapManager {
         ClientTickEvents.END_CLIENT_TICK.register(::onTick)
         MapEvents.MAP_UPDATE_APPLIED.register(::onMapUpdate)
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
-            startingRoom = null
+            physicalStartingRoom = null
             mapId = null
             mapSpec = null
             mapData = null
         }
     }
 
-    var startingRoom: PhysicalRoomCell? = null
+    var physicalStartingRoom: PhysicalRoomCell? = null
     var mapId: MapIdComponent? = null
     var mapSpec: MapSpecification? = null
     var mapData: Array<Array<LogicalRoomCell?>>? = null
@@ -54,8 +54,8 @@ object DungeonMapManager {
         val world = client.world ?: return
         val player = client.player ?: return
 
-        if (startingRoom == null)
-            findMortPos(world)?.let { startingRoom = PhysicalRoomCell.at(it.takeXZ()) }
+        if (physicalStartingRoom == null)
+            findMortPos(world)?.let { physicalStartingRoom = PhysicalRoomCell.at(it.takeXZ()) }
 
         if (mapId == null) mapId = getMapId(player)
 
@@ -65,10 +65,10 @@ object DungeonMapManager {
         if (mapData == null && mapSpec != null) {
             val maxCells = mapSpec!!.maxCells
             mapData = Array(maxCells) { Array(maxCells) { null } }
-            FilledMapItem.getMapState(mapId, world)?.let {
+            FilledMapItem.getMapState(mapId, world)?.let { state ->
                 scanMapScope.launch {
                     scanMapMutex.withLock {
-                        MapScanner.scanMap(mapData!!, it.colors, mapSpec!!)
+                        MapScanner.scanMap(mapData!!, state.colors, mapSpec!!)
                     }
                 }
             }

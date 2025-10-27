@@ -1,6 +1,6 @@
 package app.lyrablock.lyra.feature.dungeon.map.room
 
-enum class RoomColorType(val color: Byte = 0) {
+enum class RoomType(val color: Byte = 0) {
     START(30),
     REGULAR(63),
     BLOOD(18),
@@ -13,6 +13,6 @@ enum class RoomColorType(val color: Byte = 0) {
 
     companion object {
         private val colorToType = entries.reversed().associateBy { it.color }
-        fun fromColor(color: Byte) : RoomColorType? = colorToType[color]
+        fun fromColor(color: Byte) : RoomType? = colorToType[color]
     }
 }

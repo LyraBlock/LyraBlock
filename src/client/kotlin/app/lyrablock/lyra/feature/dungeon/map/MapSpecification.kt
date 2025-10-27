@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.LyraBlockClient
-import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
+import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import net.minecraft.item.map.MapState
 import kotlin.time.measureTimedValue
 
@@ -44,8 +44,8 @@ data class MapSpecification(val startingRoom: Pair<Int, Int>, val cellSize: Int)
 
         fun fromColors(colors: ByteArray): MapSpecification {
             val (result, duration) = measureTimedValue {
-                val first = colors.indexOf(RoomColorType.START.color)
-                val last = colors.lastIndexOf(RoomColorType.START.color)
+                val first = colors.indexOf(RoomType.START.color)
+                val last = colors.lastIndexOf(RoomType.START.color)
                 val firstX = first % 128
                 val firstY = first / 128
                 val height = (last / 128) - firstY + 1

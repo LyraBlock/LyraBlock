@@ -2,11 +2,11 @@ package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.feature.dungeon.map.MapSpecification.Companion.CONNECTOR_SIZE
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
-import app.lyrablock.lyra.feature.dungeon.map.room.RoomColorType
+import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.ArrayUtils.chunked
 
 object MapScanner {
-    val REGULAR_COLOR = RoomColorType.REGULAR.color
+    val REGULAR_COLOR = RoomType.REGULAR.color
 
     /**
      * Scan the color list with the map specification, turning them into logical cells.
@@ -26,20 +26,18 @@ object MapScanner {
             // (x, y) is the pixel position, (i, j) is the cell position on its grid.
             val x = startingX - CONNECTOR_SIZE + j * (cellSize + CONNECTOR_SIZE)
             val y = startingY - CONNECTOR_SIZE + i * (cellSize + CONNECTOR_SIZE)
-
-            // Do not go too far
             if (y > 128) continue@yIteration
             if (x > 128) continue@xIteration
-            if (data[i][j] != null) continue
+            if (data[i][j] != null && data[i][j]?.type != RoomType.UNDISCOVERED) continue
             val color = colors[y][x]
-            val type = RoomColorType.fromColor(color) ?: continue
+            val type = RoomType.fromColor(color) ?: continue
 
             // Nearby cells. We assert they are not null, or here is a critical problem.
             val up = data[i][j - 1]!!
             val current = data[i][j]!!
             val left = data[i - 1][j]!!
 
-            if (type != RoomColorType.REGULAR) {
+            if (type != RoomType.REGULAR) {
                 // All non-regular rooms is 1-cell wide.
                 data[i][j] = LogicalRoomCell(j * maxJ + i, type)
             } else {
@@ -56,12 +54,12 @@ object MapScanner {
             // How many pixels will we offset for searching?
             val seekDelta = cellSize / 2
 
-            if (RoomColorType.fromColor(colors[y - 1][x + seekDelta]) != null
+            if (RoomType.fromColor(colors[y - 1][x + seekDelta]) != null
                 && current.find() != up.find()
             ) {
                 current.connect(up)
             }
-            if (RoomColorType.fromColor(colors[y + seekDelta][x - 1]) != null
+            if (RoomType.fromColor(colors[y + seekDelta][x - 1]) != null
                 && current.find() != left.find()
             ) {
                 current.connect(left)
