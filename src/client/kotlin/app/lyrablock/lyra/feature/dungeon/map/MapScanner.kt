@@ -18,14 +18,14 @@ object MapScanner {
     fun scanMap(data: Array<Array<LogicalRoomCell?>>, rawColors: ByteArray, specification: MapSpecification) {
         val cellSize = specification.cellSize
         val colors = rawColors.chunked(128)
-        val (startingX, startingY) = specification.startingRoom
+        val (x0, y0) = specification.topLeftRoom
         val (maxI, maxJ) = data.size to data[0].size
 
         yIteration@ for (i in 1 until maxI) xIteration@ for (j in 1 until maxJ) {
             // Have you learned that Fencepost Problem?
             // (x, y) is the pixel position, (i, j) is the cell position on its grid.
-            val x = startingX - CONNECTOR_SIZE + j * (cellSize + CONNECTOR_SIZE)
-            val y = startingY - CONNECTOR_SIZE + i * (cellSize + CONNECTOR_SIZE)
+            val x = x0 - CONNECTOR_SIZE + j * (cellSize + CONNECTOR_SIZE)
+            val y = y0 - CONNECTOR_SIZE + i * (cellSize + CONNECTOR_SIZE)
             if (y > 128) continue@yIteration
             if (x > 128) continue@xIteration
             if (data[i][j] != null && data[i][j]?.type != RoomType.UNDISCOVERED) continue
