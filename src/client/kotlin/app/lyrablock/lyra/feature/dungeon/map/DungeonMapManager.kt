@@ -4,6 +4,7 @@ import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.base.HypixelInfo
 import app.lyrablock.lyra.event.MapEvents
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
+import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell
 import app.lyrablock.lyra.util.math.takeXZ
 import app.lyrablock.lyra.util.math.toVector3dc
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.network.ClientPlayerEntity
 import net.minecraft.client.world.ClientWorld
@@ -23,17 +25,23 @@ import net.minecraft.item.FilledMapItem
 import net.minecraft.item.Items
 import net.minecraft.item.map.MapState
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket
-import org.joml.Vector2ic
 import org.joml.Vector3dc
 
 @LyraModule
+@Suppress("unused")
 object DungeonMapManager {
     init {
         ClientTickEvents.END_CLIENT_TICK.register(::onTick)
         MapEvents.MAP_UPDATE_APPLIED.register(::onMapUpdate)
+        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
+            startingRoom = null
+            mapId = null
+            mapSpec = null
+            mapData = null
+        }
     }
 
-    var startingRoomPos: Vector2ic? = null
+    var startingRoom: PhysicalRoomCell? = null
     var mapId: MapIdComponent? = null
     var mapSpec: MapSpecification? = null
     var mapData: Array<Array<LogicalRoomCell?>>? = null
@@ -46,8 +54,8 @@ object DungeonMapManager {
         val world = client.world ?: return
         val player = client.player ?: return
 
-        if (startingRoomPos == null)
-            findMortPos(world)?.let { startingRoomPos = DungeonMapMath.getPhysicalCellAnchor(it.takeXZ()) }
+        if (startingRoom == null)
+            findMortPos(world)?.let { startingRoom = PhysicalRoomCell.at(it.takeXZ()) }
 
         if (mapId == null) mapId = getMapId(player)
 
