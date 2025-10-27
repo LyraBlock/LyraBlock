@@ -3,7 +3,8 @@ package app.lyrablock.lyra.feature.dungeon.map.room
 /**
  * A disjoint set union (DSU) structure representing a room cell on the map.
  */
-class LogicalRoomCell(val rank: Int, val type: RoomColorType) {
+@Suppress("unused_parameter")
+data class LogicalRoomCell(val rank: Int, val type: RoomColorType) {
     var parent: LogicalRoomCell = this
     val connections = mutableSetOf<LogicalRoomCell>()
 
@@ -29,10 +30,5 @@ class LogicalRoomCell(val rank: Int, val type: RoomColorType) {
         } else {
             that.connections.add(this)
         }
-    }
-
-    companion object {
-        fun makeNulls(width: Int, height: Int) =
-            Array(width) { arrayOfNulls<LogicalRoomCell>(height) }
     }
 }
