@@ -7,13 +7,13 @@ import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.ArrayUtils.chunked
 import net.minecraft.client.world.ClientWorld
 
-class MapData(val width: Int, val height: Int) {
+class MapData(val width: Int, val height: Int, val specification: MapSpecification) {
     val data: Array<Array<LogicalRoomCell?>> = Array(height) { Array(width) { null } }
 
     /**
      * Scan the color list with the map specification, turning them into logical cells.
      */
-    fun scanMap(rawColors: ByteArray, specification: MapSpecification) {
+    fun scanMap(rawColors: ByteArray) {
         val cellSize = specification.cellSize
         val colors = rawColors.chunked(128)
         val (x0, y0) = specification.topLeftRoom
@@ -65,7 +65,7 @@ class MapData(val width: Int, val height: Int) {
         }
     }
 
-    fun scanPhysical(spec: MapSpecification, world: ClientWorld, physical: PhysicalRoomCell, physicalStarting: PhysicalRoomCell) {
+    fun scanPhysical(world: ClientWorld, physical: PhysicalRoomCell, physicalStarting: PhysicalRoomCell) {
         TODO("scan the blocks in the physical world and match it with a name.")
     }
 

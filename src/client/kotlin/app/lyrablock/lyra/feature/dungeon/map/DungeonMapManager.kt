@@ -35,14 +35,12 @@ object DungeonMapManager {
         ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register { _, _ ->
             physicalStartingRoom = null
             mapId = null
-            mapSpec = null
             mapData = null
         }
     }
 
     var physicalStartingRoom: PhysicalRoomCell? = null
     var mapId: MapIdComponent? = null
-    var mapSpec: MapSpecification? = null
     var mapData: MapData? = null
     var currentPhysical: PhysicalRoomCell? = null
     var currentLogicalIndex: Pair<Int, Int>? = null
@@ -60,26 +58,25 @@ object DungeonMapManager {
 
         if (mapId == null) mapId = getMapId(player)
 
-        if (mapSpec == null)
-            mapSpec = FilledMapItem.getMapState(mapId, world)?.let { MapSpecification.fromMapState(it) }
-
-        if (mapData == null && mapSpec != null) {
-            val maxCells = mapSpec!!.maxCells
-            mapData = MapData(maxCells, maxCells)
-            FilledMapItem.getMapState(mapId, world)?.let { state ->
+        if (mapData == null) {
+            val state = FilledMapItem.getMapState(mapId, world)
+            // Get map specification, then pass it to mapData
+            val spec = state?.let { MapSpecification.fromMapState(it) }
+            if (spec != null) {
+                val maxCells = spec.maxCells
+                mapData = MapData(maxCells, maxCells, spec)
                 scanMapScope.launch {
                     scanMapMutex.withLock {
-                        mapData?.scanMap(state.colors, mapSpec!!)
+                        mapData?.scanMap(state.colors)
                     }
                 }
             }
         }
-
         // From here on, we will no longer modify the values of these variables.
         // We store them as `val`s so that they are also ensured not to be modified concurrently,
         // making Kotlin's automatic (non-null) casting properly work.
         val mapData = mapData ?: return
-        val mapSpec = mapSpec ?: return
+        val mapSpec = mapData.specification
         val physicalStartingRoom = physicalStartingRoom ?: return
 
         val currentPhysical = PhysicalRoomCell.at(player.pos.toVector3dc().takeXZ())
@@ -94,7 +91,7 @@ object DungeonMapManager {
         if (mapData == null) return
         scanMapScope.launch {
             scanMapMutex.withLock {
-                mapData!!.scanMap(state.colors, mapSpec!!)
+                mapData!!.scanMap(state.colors)
             }
         }
     }
