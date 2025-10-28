@@ -39,7 +39,7 @@ object MapScanner {
 
             if (type != RoomType.REGULAR) {
                 // All non-regular rooms is 1-cell wide.
-                data[i][j] = LogicalRoomCell(j * maxJ + i, type)
+                data[i][j] = LogicalRoomCell(i, j, type)
             } else {
                 // Try to merge regular rooms.
                 if (colors[y][x - 1] == REGULAR_COLOR) {
