@@ -24,7 +24,7 @@ data class LogicalRoomCell(val gridX: Int, val gridY: Int, val type: RoomType) {
             1 -> RoomShape.CELL
             2 -> RoomShape.R_1X2
             3 -> {
-                if (siblings.any { it.gridX - gridX == 1 || it.gridY - gridY == 1 }) RoomShape.R_1X3
+                if (siblings.any { it.gridX - gridX == 2 || it.gridY - gridY == 2 }) RoomShape.R_1X3
                 else RoomShape.L_SHAPED
             }
 
