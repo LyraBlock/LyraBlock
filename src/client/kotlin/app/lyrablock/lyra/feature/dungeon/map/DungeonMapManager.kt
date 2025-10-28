@@ -3,7 +3,6 @@ package app.lyrablock.lyra.feature.dungeon.map
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.base.HypixelInfo
 import app.lyrablock.lyra.event.MapEvents
-import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell
 import app.lyrablock.lyra.util.math.takeXZ
 import app.lyrablock.lyra.util.math.toVector3dc
@@ -44,9 +43,9 @@ object DungeonMapManager {
     var physicalStartingRoom: PhysicalRoomCell? = null
     var mapId: MapIdComponent? = null
     var mapSpec: MapSpecification? = null
-    var mapData: Array<Array<LogicalRoomCell?>>? = null
+    var mapData: MapData? = null
     var currentPhysical: PhysicalRoomCell? = null
-    var currentLogical: LogicalRoomCell? = null
+    var currentLogicalIndex: Pair<Int, Int>? = null
 
     val scanMapScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val scanMapMutex = Mutex()
@@ -66,11 +65,11 @@ object DungeonMapManager {
 
         if (mapData == null && mapSpec != null) {
             val maxCells = mapSpec!!.maxCells
-            mapData = Array(maxCells) { Array(maxCells) { null } }
+            mapData = MapData(maxCells, maxCells)
             FilledMapItem.getMapState(mapId, world)?.let { state ->
                 scanMapScope.launch {
                     scanMapMutex.withLock {
-                        MapScanner.scanMap(mapData!!, state.colors, mapSpec!!)
+                        mapData?.scanMap(state.colors, mapSpec!!)
                     }
                 }
             }
@@ -85,9 +84,8 @@ object DungeonMapManager {
 
         val currentPhysical = PhysicalRoomCell.at(player.pos.toVector3dc().takeXZ())
         this.currentPhysical = currentPhysical
-        val currentLogical = currentPhysical.toLogical(mapData, mapSpec, physicalStartingRoom)
-        // The `null` case may very well happen, because the map is scanned in a coroutine.
-        this.currentLogical = currentLogical ?: return
+        val currentLogicalIndex = currentPhysical.toLogicalIndex(mapSpec, physicalStartingRoom)
+        this.currentLogicalIndex = currentLogicalIndex
 
     }
 
@@ -96,7 +94,7 @@ object DungeonMapManager {
         if (mapData == null) return
         scanMapScope.launch {
             scanMapMutex.withLock {
-                MapScanner.scanMap(mapData!!, state.colors, mapSpec!!)
+                mapData!!.scanMap(state.colors, mapSpec!!)
             }
         }
     }

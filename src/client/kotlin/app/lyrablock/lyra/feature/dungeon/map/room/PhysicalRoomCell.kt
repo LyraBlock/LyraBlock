@@ -1,5 +1,6 @@
 package app.lyrablock.lyra.feature.dungeon.map.room
 
+import app.lyrablock.lyra.feature.dungeon.map.MapData
 import app.lyrablock.lyra.feature.dungeon.map.MapSpecification
 import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell.Companion.at
 import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell.Companion.getComponentAnchor
@@ -18,10 +19,15 @@ data class PhysicalRoomCell(val anchorX: Int, val anchorZ: Int) {
     /**
      * Transform this physical room to a logical room.
      */
-    fun toLogical(data: Array<Array<LogicalRoomCell?>>,  spec: MapSpecification, physicalEntrance: PhysicalRoomCell): LogicalRoomCell? {
+    fun toLogical(data: MapData, spec: MapSpecification, physicalStartingRoom: PhysicalRoomCell): LogicalRoomCell? {
+        val (i, j) = toLogicalIndex(spec, physicalStartingRoom)
+        return data.data[i][j]
+    }
+
+    fun toLogicalIndex(spec: MapSpecification, physicalStartingRoom: PhysicalRoomCell): Pair<Int, Int> {
         val cellSize = spec.cellSize
-        val (j, i) = (this.toVector() - physicalEntrance.toVector()) / 32 * (cellSize + MapSpecification.CONNECTOR_SIZE)
-        return data[i][j]
+        val (j, i) = (this.toVector() - physicalStartingRoom.toVector()) / 32 * (cellSize + MapSpecification.CONNECTOR_SIZE)
+        return i to j
     }
 
     companion object {

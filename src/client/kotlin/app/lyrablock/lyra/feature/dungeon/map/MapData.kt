@@ -2,20 +2,18 @@ package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.feature.dungeon.map.MapSpecification.Companion.CONNECTOR_SIZE
 import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
+import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.ArrayUtils.chunked
+import net.minecraft.client.world.ClientWorld
 
-object MapScanner {
-    val REGULAR_COLOR = RoomType.REGULAR.color
+class MapData(val width: Int, val height: Int) {
+    val data: Array<Array<LogicalRoomCell?>> = Array(height) { Array(width) { null } }
 
     /**
      * Scan the color list with the map specification, turning them into logical cells.
-     *
-     * **Note**. This function has a side effect that modifies the content of `data`.
-     *
-     * @param data The room data. **Its content will be modified**.
      */
-    fun scanMap(data: Array<Array<LogicalRoomCell?>>, rawColors: ByteArray, specification: MapSpecification) {
+    fun scanMap(rawColors: ByteArray, specification: MapSpecification) {
         val cellSize = specification.cellSize
         val colors = rawColors.chunked(128)
         val (x0, y0) = specification.topLeftRoom
@@ -42,9 +40,9 @@ object MapScanner {
                 data[i][j] = LogicalRoomCell(i, j, type)
             } else {
                 // Try to merge regular rooms.
-                if (colors[y][x - 1] == REGULAR_COLOR) {
+                if (colors[y][x - 1] == REGULAR_COLOR)
                     current.union(left)
-                }
+
                 if (colors[y - 1][x] == REGULAR_COLOR)
                     current.union(up)
             }
@@ -65,5 +63,13 @@ object MapScanner {
                 current.connect(left)
             }
         }
+    }
+
+    fun scanPhysical(spec: MapSpecification, world: ClientWorld, physical: PhysicalRoomCell, physicalStarting: PhysicalRoomCell) {
+        TODO("scan the blocks in the physical world and match it with a name.")
+    }
+
+    companion object {
+        val REGULAR_COLOR = RoomType.REGULAR.color
     }
 }
