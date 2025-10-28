@@ -19,20 +19,22 @@ data class LogicalRoomCell(val gridX: Int, val gridY: Int, val type: RoomType) {
     val siblings = mutableSetOf(this)
 
     val shape: RoomShape by lazy {
-        if (this != parent) parent.shape
+        if (this != find()) find().shape
+        else when (siblings.size) {
+            1 -> RoomShape.CELL
+            2 -> RoomShape.R_1X2
+            3 -> {
+                if (siblings.any { it.gridX - gridX == 2 || it.gridY - gridY == 2 }) RoomShape.R_1X3
+                else RoomShape.L_SHAPED
+            }
 
-        if (siblings.size == 1) RoomShape.CELL
-        if (siblings.size == 2) RoomShape.R_1X2
-        if (siblings.size == 3) {
-            if (siblings.any { it.gridX - gridX == 2 || it.gridY - gridY == 2 }) RoomShape.R_1X3
-            else RoomShape.L_SHAPED
-        }
-        if (siblings.size == 4) {
-            if (siblings.any { it.gridX - gridX == 1 && it.gridY - gridY == 1 }) RoomShape.R_2X2
-            else RoomShape.R_1X4
-        }
+            4 -> {
+                if (siblings.any { it.gridX - gridX == 1 && it.gridY - gridY == 1 }) RoomShape.R_2X2
+                else RoomShape.R_1X4
+            }
 
-        throw IllegalStateException("Room shape not found")
+            else -> throw NoSuchElementException("Room shape not found.")
+        }
     }
 
     fun union(other: LogicalRoomCell) {
