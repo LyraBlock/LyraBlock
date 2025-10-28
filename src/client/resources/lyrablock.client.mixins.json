@@ -3,8 +3,6 @@
   "package": "app.lyrablock.lyra.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "ChatHudAccessor",
-    "ChatScreenMixin",
     "ClientPlayNetworkHandlerMixin",
     "HandledScreenMixin",
     "ItemStackMixin",
