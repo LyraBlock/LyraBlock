@@ -45,6 +45,8 @@ object DungeonMapManager {
     var mapId: MapIdComponent? = null
     var mapSpec: MapSpecification? = null
     var mapData: Array<Array<LogicalRoomCell?>>? = null
+    var currentPhysical: PhysicalRoomCell? = null
+    var currentLogical: LogicalRoomCell? = null
 
     val scanMapScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val scanMapMutex = Mutex()
@@ -73,6 +75,20 @@ object DungeonMapManager {
                 }
             }
         }
+
+        // From here on, we will no longer modify the values of these variables.
+        // We store them as `val`s so that they are also ensured not to be modified concurrently,
+        // making Kotlin's automatic (non-null) casting properly work.
+        val mapData = mapData ?: return
+        val mapSpec = mapSpec ?: return
+        val physicalStartingRoom = physicalStartingRoom ?: return
+
+        val currentPhysical = PhysicalRoomCell.at(player.pos.toVector3dc().takeXZ())
+        this.currentPhysical = currentPhysical
+        val currentLogical = currentPhysical.toLogical(mapData, mapSpec, physicalStartingRoom)
+        // The `null` case may very well happen, because the map is scanned in a coroutine.
+        this.currentLogical = currentLogical ?: return
+
     }
 
     fun onMapUpdate(packet: MapUpdateS2CPacket, state: MapState) {

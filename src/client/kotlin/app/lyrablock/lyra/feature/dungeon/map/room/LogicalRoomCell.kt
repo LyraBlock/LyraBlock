@@ -9,6 +9,9 @@ data class LogicalRoomCell(val gridX: Int, val gridY: Int, val type: RoomType) {
     private val rank = gridY shl 4 + gridX
     var parent: LogicalRoomCell = this
     val connections = mutableSetOf<LogicalRoomCell>()
+    var roomId: String = ""
+        get() = if (find() == this) field else find().roomId
+        set(value) = if (find() == this) field = value else find().roomId = value
 
     /**
      * All elements that have the same parent.
