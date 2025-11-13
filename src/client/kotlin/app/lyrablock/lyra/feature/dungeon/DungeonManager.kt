@@ -3,7 +3,7 @@ package app.lyrablock.lyra.feature.dungeon
 import app.lyrablock.lyra.LyraModule
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 
 /**
  * The center controller for dungeons.
@@ -20,7 +20,7 @@ object DungeonManager {
 //    var mapSpec: MapSpecification? = null
 //    var mapData = null
 
-    private fun tick(client: MinecraftClient) {
+    private fun tick(client: Minecraft) {
 
     }
 

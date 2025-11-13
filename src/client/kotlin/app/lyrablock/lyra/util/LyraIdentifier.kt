@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.util
 
-import net.minecraft.util.Identifier
+import net.minecraft.resources.ResourceLocation
 
 object LyraIdentifier {
-    fun of(path: String) = Identifier.of("lyra", path)
+    fun of(path: String) = ResourceLocation.fromNamespaceAndPath("lyra", path)
 }

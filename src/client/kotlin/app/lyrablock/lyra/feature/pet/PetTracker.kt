@@ -3,9 +3,9 @@ package app.lyrablock.lyra.feature.pet
 import app.lyrablock.lyra.event.ScreenHandlerEvents
 import app.lyrablock.lyra.util.item.SkyBlockRarity
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.screen.slot.SlotActionType
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.ClickType
 
 // TODO: this should be profile related.
 object PetTracker {
@@ -22,9 +22,9 @@ object PetTracker {
 
     val PET_NAME_PATTERN = Regex("""^(. )?§7\[Lvl (\d+)] (§.)([A-Z a-z]+)""")
 
-    fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity) {
+    fun onSlotClick(slotIndex: Int, button: Int, actionType: ClickType, player: Player) {
         if (button == 0) {
-            val stack = player.currentScreenHandler.getSlot(slotIndex).stack
+            val stack = player.containerMenu.getSlot(slotIndex).item
             val name = stack.customName?.string ?: return
 
             PET_NAME_PATTERN.matchEntire(name)?.let { match ->
@@ -36,7 +36,7 @@ object PetTracker {
         }
     }
 
-    fun onReceiveMessage(message: Text, overlay: Boolean) {
+    fun onReceiveMessage(message: Component, overlay: Boolean) {
         if (overlay) return
         val message = message.string
 

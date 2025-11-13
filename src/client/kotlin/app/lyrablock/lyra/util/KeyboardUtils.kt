@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.util
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.util.InputUtil
+import com.mojang.blaze3d.platform.InputConstants
+import net.minecraft.client.Minecraft
 import org.lwjgl.glfw.GLFW
 
 object KeyboardUtils {
@@ -11,7 +11,7 @@ object KeyboardUtils {
 
     fun isKeyDown(id: Int) = when {
         id == -1 || id == 0 -> false
-        else -> InputUtil.isKeyPressed(MinecraftClient.getInstance().window.handle, id)
+        else -> InputConstants.isKeyDown(Minecraft.getInstance().window, id)
     }
     private fun Int.isDown() = isKeyDown(this)
 

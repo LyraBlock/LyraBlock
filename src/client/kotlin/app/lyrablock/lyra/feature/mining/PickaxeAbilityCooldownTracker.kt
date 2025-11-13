@@ -12,8 +12,8 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
+import net.minecraft.network.chat.Component
 import net.minecraft.server.MinecraftServer
-import net.minecraft.text.Text
 import kotlin.math.ceil
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -48,14 +48,14 @@ object PickaxeAbilityCooldownTracker {
         val now = Clock.System.now()
         if (now >= startInstant + totalDuration && !ready) {
             // java.lang.NullPointerException: null
-            LyraTitleController.show(Text.of("${activeAbility?.abilityName} Ready!"))
+            LyraTitleController.show(Component.nullToEmpty("${activeAbility?.abilityName} Ready!"))
             PlaySoundHelper.ding()
             ready = true
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun onReceiveGameMessage(message: Text, overlay: Boolean) {
+    fun onReceiveGameMessage(message: Component, overlay: Boolean) {
         if (overlay) return
         val message = message.string
 

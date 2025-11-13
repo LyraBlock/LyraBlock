@@ -6,6 +6,7 @@ import app.lyrablock.lyra.event.MapEvents
 import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell
 import app.lyrablock.lyra.util.math.takeXZ
 import app.lyrablock.lyra.util.math.toVector3dc
+import app.lyrablock.lyra.util.position
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,16 +15,16 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.client.world.ClientWorld
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.component.type.MapIdComponent
-import net.minecraft.entity.decoration.ArmorStandEntity
-import net.minecraft.item.FilledMapItem
-import net.minecraft.item.Items
-import net.minecraft.item.map.MapState
-import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket
+import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.ClientLevel
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.core.component.DataComponents
+import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
+import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.MapItem
+import net.minecraft.world.level.saveddata.maps.MapId
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData
 import org.joml.Vector3dc
 
 @LyraModule
@@ -40,7 +41,7 @@ object DungeonMapManager {
     }
 
     var physicalStartingRoom: PhysicalRoomCell? = null
-    var mapId: MapIdComponent? = null
+    var mapId: MapId? = null
     var mapData: MapData? = null
     var currentPhysical: PhysicalRoomCell? = null
     var currentLogicalIndex: Pair<Int, Int>? = null
@@ -48,9 +49,9 @@ object DungeonMapManager {
     val scanMapScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     val scanMapMutex = Mutex()
 
-    fun onTick(client: MinecraftClient) {
+    fun onTick(client: Minecraft) {
         if (!HypixelInfo.isInDungeons) return
-        val world = client.world ?: return
+        val world = client.level ?: return
         val player = client.player ?: return
 
         if (physicalStartingRoom == null)
@@ -59,7 +60,7 @@ object DungeonMapManager {
         if (mapId == null) mapId = getMapId(player)
 
         if (mapData == null) {
-            val state = FilledMapItem.getMapState(mapId, world)
+            val state = MapItem.getSavedData(mapId, world)
             // Get map specification, then pass it to mapData
             val spec = state?.let { MapSpecification.fromMapState(it) }
             if (spec != null) {
@@ -79,14 +80,14 @@ object DungeonMapManager {
         val mapSpec = mapData.specification
         val physicalStartingRoom = physicalStartingRoom ?: return
 
-        val currentPhysical = PhysicalRoomCell.at(player.pos.toVector3dc().takeXZ())
+        val currentPhysical = PhysicalRoomCell.at(player.position.toVector3dc().takeXZ())
         this.currentPhysical = currentPhysical
         val currentLogicalIndex = currentPhysical.toLogicalIndex(mapSpec, physicalStartingRoom)
         this.currentLogicalIndex = currentLogicalIndex
 
     }
 
-    fun onMapUpdate(packet: MapUpdateS2CPacket, state: MapState) {
+    fun onMapUpdate(packet: ClientboundMapItemDataPacket, state: MapItemSavedData) {
         if (packet.mapId != mapId || mapId == null) return
         if (mapData == null) return
         scanMapScope.launch {
@@ -99,16 +100,16 @@ object DungeonMapManager {
     /**
      * Fetch the **name tag** coordinates of Mort.
      */
-    private fun findMortPos(world: ClientWorld): Vector3dc? {
-        return world.entities.find { it is ArmorStandEntity && it.name.string.contains("Mort") }?.pos?.toVector3dc()
+    private fun findMortPos(world: ClientLevel): Vector3dc? {
+        return world.entitiesForRendering().find { it is ArmorStand && it.name.string.contains("Mort") }?.position?.toVector3dc()
     }
 
-    private fun getMapId(player: ClientPlayerEntity): MapIdComponent? {
-        val mapStack = player.inventory.getStack(8)
+    private fun getMapId(player: LocalPlayer): MapId? {
+        val mapStack = player.inventory.getItem(8)
         if (mapStack.item != Items.FILLED_MAP) return null
-        val name = mapStack.name.string
+        val name = mapStack.hoverName.string
         // Replace this with a repo pattern?
         if (!name.contains("Magical Map")) return null
-        return mapStack.get(DataComponentTypes.MAP_ID)
+        return mapStack.get(DataComponents.MAP_ID)
     }
 }

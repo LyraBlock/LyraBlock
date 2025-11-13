@@ -1,6 +1,6 @@
 package app.lyrablock.orion
 
-import net.minecraft.client.gui.ScreenRect
+import net.minecraft.client.gui.navigation.ScreenRectangle
 
 data class Size(val width: Int, val height: Int) {
     constructor(width: Number, height: Number) : this(width.toInt(), height.toInt())
@@ -19,7 +19,7 @@ data class Size(val width: Int, val height: Int) {
         height.coerceAtMost(other.height)
     )
 
-    fun atScreenOrigin() = ScreenRect(0, 0, width, height)
+    fun atScreenOrigin() = ScreenRectangle(0, 0, width, height)
 
     companion object {
         fun square(a: Number) = Size(a, a)

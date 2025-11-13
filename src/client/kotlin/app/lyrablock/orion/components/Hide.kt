@@ -3,7 +3,7 @@ package app.lyrablock.orion.components
 import app.lyrablock.orion.Constraints
 import app.lyrablock.orion.OrionComponent
 import app.lyrablock.orion.Size
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 /**
  * Hides the inner component. **The space will be still occupied.**
@@ -15,7 +15,7 @@ class Hide(val show: Boolean = false, child: () -> OrionComponent) : OrionCompon
 
     override fun measure(parentConstraints: Constraints): Size = child.measure(parentConstraints)
 
-    override fun render(context: DrawContext, size: Size) {
+    override fun render(context: GuiGraphics, size: Size) {
         if (show) child.render(context, size)
     }
 }

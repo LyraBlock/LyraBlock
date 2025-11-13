@@ -2,7 +2,7 @@ package app.lyrablock.lyra.feature.dungeon.map
 
 import app.lyrablock.lyra.LyraBlockClient
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
-import net.minecraft.item.map.MapState
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData
 import kotlin.time.measureTimedValue
 
 /**
@@ -56,6 +56,6 @@ data class MapSpecification(val startingRoom: Pair<Int, Int>, val cellSize: Int)
             return result
         }
 
-        fun fromMapState(state: MapState): MapSpecification = fromColors(state.colors)
+        fun fromMapState(state: MapItemSavedData): MapSpecification = fromColors(state.colors)
     }
 }

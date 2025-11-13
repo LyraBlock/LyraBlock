@@ -1,54 +1,54 @@
 package app.lyrablock.lyra.util.render
 
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.RenderPhase
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.renderer.RenderStateShard
+import net.minecraft.client.renderer.RenderType
 import java.util.*
 
 object LyraRenderLayer {
-    val LINES_SEE_THROUGH: RenderLayer = RenderLayer.of(
+    val LINES_SEE_THROUGH: RenderType = RenderType.create(
         "lyra_lines_see_through",
-        RenderLayer.DEFAULT_BUFFER_SIZE,
+        RenderType.TRANSIENT_BUFFER_SIZE,
         false,
         true,
         LyraRenderPipelines.LINES_SEE_THROUGH,
-        RenderLayer.MultiPhaseParameters.builder()
-            .lineWidth(RenderPhase.LineWidth(OptionalDouble.of(1.0)))
-            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-            .build(false)
+        RenderType.CompositeState.builder()
+            .setLineState(RenderStateShard.LineStateShard(OptionalDouble.of(1.0)))
+            .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+            .createCompositeState(false)
     )
 
-    val QUADS_SEE_THROUGH: RenderLayer = RenderLayer.of(
+    val QUADS_SEE_THROUGH: RenderType = RenderType.create(
         "lyra_quads_see_through",
-        RenderLayer.DEFAULT_BUFFER_SIZE,
+        RenderType.TRANSIENT_BUFFER_SIZE,
         false,
         true,
         LyraRenderPipelines.QUADS_SEE_THROUGH,
-        RenderLayer.MultiPhaseParameters.builder()
-            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-            .build(false)
+        RenderType.CompositeState.builder()
+            .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+            .createCompositeState(false)
     )
 
-    val QUADS: RenderLayer = RenderLayer.of(
+    val QUADS: RenderType = RenderType.create(
         "lyra_quads",
-        RenderLayer.DEFAULT_BUFFER_SIZE,
+        RenderType.TRANSIENT_BUFFER_SIZE,
         false,
         true,
         RenderPipelines.DEBUG_QUADS,
-        RenderLayer.MultiPhaseParameters.builder()
-            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-            .build(false)
+        RenderType.CompositeState.builder()
+            .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+            .createCompositeState(false)
     )
 
-    val FILLED: RenderLayer = RenderLayer.of(
+    val FILLED: RenderType = RenderType.create(
         "lyra_filled",
-        RenderLayer.DEFAULT_BUFFER_SIZE,
+        RenderType.TRANSIENT_BUFFER_SIZE,
         false,
         true,
         RenderPipelines.DEBUG_FILLED_BOX,
-        RenderLayer.MultiPhaseParameters.builder()
-            .layering(RenderPhase.VIEW_OFFSET_Z_LAYERING)
-            .build(false)
+        RenderType.CompositeState.builder()
+            .setLayeringState(RenderStateShard.VIEW_OFFSET_Z_LAYERING)
+            .createCompositeState(false)
     )
 
     fun getLinesSeeThrough() = LINES_SEE_THROUGH

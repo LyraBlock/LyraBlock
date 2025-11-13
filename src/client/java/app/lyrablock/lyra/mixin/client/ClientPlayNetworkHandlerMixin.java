@@ -4,26 +4,26 @@ import app.lyrablock.lyra.event.MapEvents;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.item.map.MapState;
-import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
     @Inject(
-        method = "onMapUpdate",
+        method = "handleMapItemData",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/network/packet/s2c/play/MapUpdateS2CPacket;apply(Lnet/minecraft/item/map/MapState;)V",
+            target = "Lnet/minecraft/network/protocol/game/ClientboundMapItemDataPacket;applyToMap(Lnet/minecraft/world/level/saveddata/maps/MapItemSavedData;)V",
             shift = At.Shift.AFTER
         )
     )
-    void lyra$apply(MapUpdateS2CPacket packet, CallbackInfo ci, @Local MapState mapState) {
+    void lyra$apply(ClientboundMapItemDataPacket packet, CallbackInfo ci, @Local MapItemSavedData mapState) {
         MapEvents.MAP_UPDATE_APPLIED.invoker().onMapUpdateApplied(packet, mapState);
     }
 }

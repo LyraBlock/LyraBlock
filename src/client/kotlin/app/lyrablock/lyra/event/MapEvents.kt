@@ -2,13 +2,13 @@ package app.lyrablock.lyra.event
 
 import app.lyrablock.lyra.mixin.client.ClientPlayNetworkHandlerMixin
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.item.map.MapState
-import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket
+import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData
 
 @InvokedBy(ClientPlayNetworkHandlerMixin::class)
 object MapEvents {
     fun interface MapUpdateApplied {
-        fun onMapUpdateApplied(packet: MapUpdateS2CPacket, state: MapState)
+        fun onMapUpdateApplied(packet: ClientboundMapItemDataPacket, state: MapItemSavedData)
     }
 
     @JvmField

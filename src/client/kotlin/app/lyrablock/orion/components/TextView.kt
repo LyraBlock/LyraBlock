@@ -5,29 +5,29 @@ import app.lyrablock.orion.Constraints
 import app.lyrablock.orion.OrionComponent
 import app.lyrablock.orion.Size
 import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.text.OrderedText
-import net.minecraft.text.Text
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.network.chat.Component
+import net.minecraft.util.FormattedCharSequence
 
 @Suppress("unused")
-class TextView(val text: OrderedText, val style: Style = Style.DEFAULT) : OrionComponent {
-    constructor(text: Text, style: Style = Style.DEFAULT) : this(text.asOrderedText(), style)
-    constructor(text: String, style: Style = Style.DEFAULT) : this(Text.of(text), style)
+class TextView(val text: FormattedCharSequence, val style: Style = Style.DEFAULT) : OrionComponent {
+    constructor(text: Component, style: Style = Style.DEFAULT) : this(text.visualOrderText, style)
+    constructor(text: String, style: Style = Style.DEFAULT) : this(Component.nullToEmpty(text), style)
 
-    val textRenderer = MinecraftClient.getInstance().textRenderer!!
-    val fontHeight = textRenderer.fontHeight
+    val textRenderer = Minecraft.getInstance().font!!
+    val fontHeight = textRenderer.lineHeight
 
-    val originSize = Size(textRenderer.getWidth(text) * style.scale, fontHeight * style.scale)
+    val originSize = Size(textRenderer.width(text) * style.scale, fontHeight * style.scale)
 
     override fun measure(parentConstraints: Constraints): Size {
         return originSize.coerceIn(parentConstraints)
     }
 
-    override fun render(context: DrawContext, size: Size) {
+    override fun render(context: GuiGraphics, size: Size) {
         context.withPushMatrix {
-            matrices.uniformScale(style.scale)
-            context.drawText(textRenderer, text, 0, 0, style.color, style.shadowed)
+            pose().uniformScale(style.scale)
+            context.drawString(textRenderer, text, 0, 0, style.color, style.shadowed)
         }
     }
 
@@ -37,7 +37,7 @@ class TextView(val text: OrderedText, val style: Style = Style.DEFAULT) : OrionC
         var color: Int = 0xFFFFFFFF.toInt()
     ) {
         fun styled(text: String) = TextView(text)
-        fun styled(text: Text) = TextView(text)
+        fun styled(text: Component) = TextView(text)
 
         companion object {
             val DEFAULT = Style()

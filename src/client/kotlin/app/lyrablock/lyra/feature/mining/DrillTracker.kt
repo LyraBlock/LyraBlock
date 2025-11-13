@@ -6,7 +6,7 @@ import app.lyrablock.lyra.util.item.ItemUtils.getSkyBlockID
 import app.lyrablock.lyra.util.item.ItemUtils.getSkyBlockUUID
 import app.lyrablock.lyra.util.math.NumberUtils
 import kotlinx.serialization.Serializable
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.ItemStack
 import kotlin.jvm.optionals.getOrNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

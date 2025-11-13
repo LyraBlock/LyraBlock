@@ -13,7 +13,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import kotlin.io.path.div
 import kotlin.time.Duration.Companion.minutes
 
@@ -35,7 +35,7 @@ object BazaarTracker {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun onClientTick(client: MinecraftClient) {
+    private fun onClientTick(client: Minecraft) {
         val lastUpdated = bazaarLoader.data?.lastUpdated?.let { Instant.fromEpochMilliseconds(it) } ?: Instant.DISTANT_PAST // if data is older than 5 minutes
 
         if (bazaarLoader.canFetchNow() && Clock.System.now() - lastUpdated >= bazaarLoader.rateLimit) {

@@ -2,10 +2,10 @@ package app.lyrablock.lyra.feature.misc
 
 import app.lyrablock.lyra.LyraModule
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.HoverEvent
-import net.minecraft.text.Text
-import net.minecraft.util.Formatting
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
 
 @LyraModule
 object WaypointMarker {
@@ -21,7 +21,7 @@ object WaypointMarker {
     val separatedCoordinatesRegex =
         Regex("""\s*(?<x>\d+(?:\.\d+)?)[,\s]\s*(?<y>\d+(?:\.\d+)?)[,\s]\s*(?<z>\d+(?:\.\d+)?)(?![,\s]\s+\d)""")
 
-    fun modifyGameMessage(message: Text, overlay: Boolean): Text {
+    fun modifyGameMessage(message: Component, overlay: Boolean): Component {
         if (overlay) return message
         val messageString = message.string
         val match = namedCoordinatesRegex.find(messageString)
@@ -30,12 +30,12 @@ object WaypointMarker {
         val range = match.range
 
         // Construct a message
-        val modifiedMessage = Text.empty()
+        val modifiedMessage = Component.empty()
         modifiedMessage.append(messageString.take(range.first))
-        val clickableComponent = Text.literal(match.value)
+        val clickableComponent = Component.literal(match.value)
 
         val style = clickableComponent.style
-            .withUnderline(true)
+            .withUnderlined(true)
             .withClickEvent(ClickEvent.SuggestCommand("/lyra:todo waypoint add " + match.let {
                 val x = it.groups["x"]!!.value
                 val y = it.groups["y"]!!.value
@@ -44,9 +44,9 @@ object WaypointMarker {
                 "$x $y $z"
             }))
             .withHoverEvent(HoverEvent.ShowText(
-                Text.translatable("lyra.waypoint.add_tooltip").formatted(Formatting.YELLOW)
+                Component.translatable("lyra.waypoint.add_tooltip").withStyle(ChatFormatting.YELLOW)
             ))
-            .withColor(Formatting.GOLD)
+            .withColor(ChatFormatting.GOLD)
         clickableComponent.style = style
         modifiedMessage.append(clickableComponent)
         modifiedMessage.append(messageString.substring(range.last + 1))

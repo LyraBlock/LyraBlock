@@ -2,25 +2,25 @@ package app.lyrablock.lyra.event
 
 import app.lyrablock.lyra.mixin.client.HandledScreenMixin
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.item.tooltip.TooltipData
-import net.minecraft.screen.slot.Slot
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.gui.Font
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.inventory.Slot
+import net.minecraft.world.inventory.tooltip.TooltipComponent
 
 @InvokedBy(HandledScreenMixin::class)
 object HandledScreenEvents {
     fun interface ModifyItemTooltip {
         fun onDrawItemTooltip(
-            context: DrawContext,
+            context: GuiGraphics,
             focusedSlot: Slot,
-            textRenderer: TextRenderer,
-            text: List<Text>,
-            data: TooltipData?,
+            textRenderer: Font,
+            text: List<Component>,
+            data: TooltipComponent?,
             x: Int,
             y: Int,
-            texture: Identifier?
+            texture: ResourceLocation?
         ): CancellableEventResult
     }
 

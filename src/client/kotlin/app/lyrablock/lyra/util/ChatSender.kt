@@ -1,13 +1,13 @@
 package app.lyrablock.lyra.util
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.text.Text
-import net.minecraft.text.Text.literal
+import net.minecraft.client.Minecraft
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Component.literal
 
 object ChatSender {
 //    val PREFIX: Text = Text.of("§3Lyra§bBlock §7» §r")
-    val PREFIX: Text = literal("").apply {
+    val PREFIX: Component = literal("").apply {
         append(literal("L").withColor(0x66ffff))
         append(literal("y").withColor(0x5ef4f4))
         append(literal("r").withColor(0x57eaea))
@@ -20,14 +20,14 @@ object ChatSender {
         append(literal(" » "))
     }
 
-    fun sendInfo(message: Text) {
-        val client = MinecraftClient.getInstance()
-        val player: ClientPlayerEntity = client.player ?: return
+    fun sendInfo(message: Component) {
+        val client = Minecraft.getInstance()
+        val player: LocalPlayer = client.player ?: return
         // Player must be client-side, or we are fucked up.
-        player.sendMessage(PREFIX.copy().append(message), false)
+        player.displayClientMessage(PREFIX.copy().append(message), false)
     }
 
     fun sendInfo(message: String) {
-        sendInfo(Text.of(message))
+        sendInfo(Component.nullToEmpty(message))
     }
 }

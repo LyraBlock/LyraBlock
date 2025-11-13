@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.feature.items
 
 import app.lyrablock.lyra.util.math.NumberUtils.displayPrice
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
 /**
  * Utility for displaying item value information in tooltips.
@@ -17,12 +17,12 @@ object ItemExtraInformation {
         onBazaar: Boolean,
         onAuction: Boolean,
         canDonate: Boolean
-    ): List<Text>? =
+    ): List<Component>? =
         if (!(onBazaar || onAuction || canDonate)) null else buildList {
             if (onBazaar) {
                 BazaarTracker.getStatus(id)?.let { status ->
-                    add(Text.of("§eBazaar Buy: §6${displayPrice(status.buyPrice)}"))
-                    add(Text.of("§eBazaar Sell: §6${displayPrice(status.sellPrice)}"))
+                    add(Component.nullToEmpty("§eBazaar Buy: §6${displayPrice(status.buyPrice)}"))
+                    add(Component.nullToEmpty("§eBazaar Sell: §6${displayPrice(status.sellPrice)}"))
                 }
             }
         }

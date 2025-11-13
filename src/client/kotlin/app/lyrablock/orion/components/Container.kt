@@ -9,7 +9,7 @@ import app.lyrablock.orion.math.EdgeInsets
 import app.lyrablock.orion.math.Gradient
 import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
 import app.lyrablock.orion.render.DrawContextDSL.withScissorIf
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 @Suppress("unused")
 @CoreComponent
@@ -53,7 +53,7 @@ class Container(
         return parentConstraints.constrain(selfDesiredSize)
     }
 
-    override fun render(context: DrawContext, size: Size) {
+    override fun render(context: GuiGraphics, size: Size) {
         val child = child ?: return
         val measuredSize = childMeasuredSize ?: return
 
@@ -64,7 +64,7 @@ class Container(
             }
 
             context.withPushMatrix {
-                matrices.translate(padding.left, padding.top)
+                pose().translate(padding.left, padding.top)
                 child.render(context, measuredSize)
             }
         }

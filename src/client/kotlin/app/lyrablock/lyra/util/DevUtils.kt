@@ -3,16 +3,15 @@ package app.lyrablock.lyra.util
 
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.util.Identifier
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.resources.ResourceLocation
+import java.util.*
 
 object DevUtils {
-    fun drawTestText(context: DrawContext, x: Int, y: Int, text: String) {
-        context.drawText(
-            MinecraftClient.getInstance().textRenderer,
+    fun drawTestText(context: GuiGraphics, x: Int, y: Int, text: String) {
+        context.drawString(
+            Minecraft.getInstance().font,
             text,
             x,
             y,
@@ -21,9 +20,8 @@ object DevUtils {
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     fun registerDrawTestText(x: Int, y: Int, text: () -> String) {
-        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, Identifier.of("lyra:${Uuid.random()}")) { context, tickDeltaManager ->
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, ResourceLocation.parse("lyra:${UUID.randomUUID()}")) { context, _ ->
             drawTestText(context, x, y, text())
         }
     }

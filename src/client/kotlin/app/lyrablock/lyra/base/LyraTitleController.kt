@@ -8,13 +8,13 @@ import app.lyrablock.lyra.util.render.MatrixStackDSL.uniformScale
 import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.text.Text
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.network.chat.Component
 
 @LyraModule
 object LyraTitleController {
-    var currentMessage: Text = Text.empty()
+    var currentMessage: Component = Component.empty()
     var remainingTicks = 0
 
 
@@ -23,25 +23,25 @@ object LyraTitleController {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun draw(context: DrawContext, tickDeltaManager: RenderTickCounter) {
+    fun draw(context: GuiGraphics, tickDeltaManager: DeltaTracker) {
         if (--remainingTicks < 0) return
         // The font size (scaled)
         val size = 3
-        val textRenderer = MCUtils.theClient.textRenderer
-        val height = textRenderer.fontHeight * size
-        val width = textRenderer.getWidth(currentMessage) * size
-        val x = (context.scaledWindowWidth - width) / 2
-        val y = (context.scaledWindowHeight - height) / 2
+        val textRenderer = MCUtils.theClient.font
+        val height = textRenderer.lineHeight * size
+        val width = textRenderer.width(currentMessage) * size
+        val x = (context.guiWidth() - width) / 2
+        val y = (context.guiHeight() - height) / 2
         context.withPushMatrix {
-            matrices.translate(x, y).uniformScale(size)
-            drawTextWithShadow(textRenderer, currentMessage, 0, -10, 0xFFFFFF)
+            pose().translate(x, y).uniformScale(size)
+            drawString(textRenderer, currentMessage, 0, -10, 0xFFFFFF)
         }
     }
 
     /**
      * @param duration The duration in ticks.
      */
-    fun show(message: Text, duration: Int = 200) {
+    fun show(message: Component, duration: Int = 200) {
         currentMessage = message
         remainingTicks = duration
     }

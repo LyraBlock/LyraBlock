@@ -1,27 +1,30 @@
 package app.lyrablock.lyra.feature.misc
 
 import app.lyrablock.lyra.LyraModule
+import app.lyrablock.lyra.util.MCUtils
 import app.lyrablock.lyra.util.item.ItemUtils.getCustomData
+import app.lyrablock.lyra.util.math.component1
+import app.lyrablock.lyra.util.math.component2
 import app.lyrablock.lyra.util.render.LyraRenderLayer
 import app.lyrablock.lyra.util.render.WorldRenderDSL.renderBlockFilled
 import app.lyrablock.orion.math.OrionColor
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.item.Items
-import net.minecraft.registry.tag.BlockTags
-import net.minecraft.util.hit.HitResult
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.RaycastContext
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
+import net.minecraft.client.Minecraft
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.core.BlockPos
+import net.minecraft.tags.BlockTags
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec3
 
 @LyraModule
 object AotvHelper {
     private val OVERLAY_COLOR = OrionColor.argb(0xff8133d9).withAlpha(0.3f)
 
     init {
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(::render)
+        WorldRenderEvents.END_MAIN.register(::render)
     }
 
     val AOTV_ITEMS = setOf(
@@ -33,48 +36,49 @@ object AotvHelper {
      * Check if the player is ready to etherwarp.
      * @return The etherwarp distance; -1 if not available.
      */
-    fun getEtherwarpDistance(player: ClientPlayerEntity): Int {
+    fun getEtherwarpDistance(player: LocalPlayer): Int {
         val inventory = player.inventory
-        val selectedStack = inventory.selectedStack
+        val selectedStack = inventory.selectedItem
         val isHoldingAotv = selectedStack.item in AOTV_ITEMS
         val customData = selectedStack.getCustomData() ?: return -1
         if (!isHoldingAotv) return -1
-        if (!player.isSneaking) return -1
-        if (customData.getByte("ethermerge", 0.toByte()) != 1.toByte()) return -1
+        if (!player.isShiftKeyDown) return -1
+        if (customData.getByteOr("ethermerge", 0.toByte()) != 1.toByte()) return -1
 
-        val tunedTransmission = customData.getInt("tuned_transmission", 0)
+        val tunedTransmission = customData.getIntOr("tuned_transmission", 0)
         val maxDistance = 57 + tunedTransmission
 
         return maxDistance
     }
 
-    fun getEtherwarpTarget(context: WorldRenderContext, player: ClientPlayerEntity): BlockPos? {
+    fun getEtherwarpTarget(context: WorldRenderContext, player: LocalPlayer): BlockPos? {
         val distance = getEtherwarpDistance(player)
         if (distance < 0) return null
 
-        val world = context.world()
-        val camera = context.camera()
-        val start = camera.pos
-        val end = start.add(Vec3d.fromPolar(camera.pitch, camera.yaw).multiply(distance.toDouble()))
+        val world = MCUtils.theClient.level!!
+        val player = MCUtils.thePlayer!!
+        val (pitch, yaw) = player.rotationVector
+        val start = player.eyePosition
+        val end = start.add(Vec3.directionFromRotation(pitch, yaw).scale(distance.toDouble()))
 
-        val hitResult = world.raycast(
-            RaycastContext(
-                start, end, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.ANY, player
+        val hitResult = world.clip(
+            ClipContext(
+                start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player
             )
         )
         if (hitResult.type != HitResult.Type.BLOCK) return null
 
         val block = hitResult.blockPos
-        val blockAbove = world.getBlockState(block.up())
+        val blockAbove = world.getBlockState(block.above())
 
         // TODO: confirm if the tag is correct.
-        if (!blockAbove.isIn(BlockTags.REPLACEABLE)) return null
+        if (!blockAbove.`is`(BlockTags.REPLACEABLE)) return null
 
         return block
     }
 
     fun render(context: WorldRenderContext) {
-        val player = MinecraftClient.getInstance().player ?: return
+        val player = Minecraft.getInstance().player ?: return
 
         val block = getEtherwarpTarget(context, player) ?: return
 

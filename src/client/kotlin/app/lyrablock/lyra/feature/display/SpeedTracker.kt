@@ -3,7 +3,7 @@ package app.lyrablock.lyra.feature.display
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.util.DevUtils
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 
 @LyraModule
 object SpeedTracker {
@@ -14,10 +14,10 @@ object SpeedTracker {
         DevUtils.registerDrawTestText(600, 10, { "Speed: $speed" })
     }
 
-    fun tick(client: MinecraftClient) {
+    fun tick(client: Minecraft) {
         val player = client.player ?: return
         val sprinting = player.isSprinting
-        val movementSpeed = player.movementSpeed.let {
+        val movementSpeed = player.speed.let {
             if (sprinting) it / 1.3f else it
         }
 

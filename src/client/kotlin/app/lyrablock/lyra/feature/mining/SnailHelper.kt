@@ -5,7 +5,7 @@ import app.lyrablock.lyra.util.DevUtils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 import kotlin.time.Duration.Companion.seconds
 
 @LyraModule
@@ -19,7 +19,7 @@ object SnailHelper {
     var rogueSwordActivation = Instant.DISTANT_PAST
     val ROGUE_SWORD_DURATION = 30.seconds
 
-    private fun onMessage(message: Text, overlay: Boolean)  {
+    private fun onMessage(message: Component, overlay: Boolean)  {
         if (!overlay) return
         val message = message.string
         if (message.contains("(§6Speed Boost§b)")) {

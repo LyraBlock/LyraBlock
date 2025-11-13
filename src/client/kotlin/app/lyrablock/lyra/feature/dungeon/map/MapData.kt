@@ -5,7 +5,7 @@ import app.lyrablock.lyra.feature.dungeon.map.room.LogicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.PhysicalRoomCell
 import app.lyrablock.lyra.feature.dungeon.map.room.RoomType
 import app.lyrablock.lyra.util.ArrayUtils.chunked
-import net.minecraft.client.world.ClientWorld
+import net.minecraft.client.multiplayer.ClientLevel
 
 class MapData(val width: Int, val height: Int, val specification: MapSpecification) {
     val data: Array<Array<LogicalRoomCell?>> = Array(height) { Array(width) { null } }
@@ -65,7 +65,7 @@ class MapData(val width: Int, val height: Int, val specification: MapSpecificati
         }
     }
 
-    fun scanPhysical(world: ClientWorld, physical: PhysicalRoomCell, physicalStarting: PhysicalRoomCell) {
+    fun scanPhysical(world: ClientLevel, physical: PhysicalRoomCell, physicalStarting: PhysicalRoomCell) {
         TODO("scan the blocks in the physical world and match it with a name.")
     }
 

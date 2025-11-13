@@ -3,7 +3,7 @@ package app.lyrablock.orion.components
 import app.lyrablock.orion.Constraints
 import app.lyrablock.orion.OrionComponent
 import app.lyrablock.orion.Size
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 @Suppress("unused")
 class SizedEmpty(val size: Size): OrionComponent {
@@ -11,5 +11,5 @@ class SizedEmpty(val size: Size): OrionComponent {
 
     override fun measure(parentConstraints: Constraints): Size = size.coerceIn(parentConstraints)
 
-    override fun render(context: DrawContext, size: Size) = Unit
+    override fun render(context: GuiGraphics, size: Size) = Unit
 }

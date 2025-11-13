@@ -1,6 +1,6 @@
 package app.lyrablock.orion
 
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 /**
  * A high-level implementation.
@@ -14,5 +14,5 @@ abstract class OrionWidget : OrionComponent {
 
     override fun measure(parentConstraints: Constraints): Size = built.measure(parentConstraints)
 
-    override fun render(context: DrawContext, size: Size) = built.render(context, size)
+    override fun render(context: GuiGraphics, size: Size) = built.render(context, size)
 }

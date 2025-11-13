@@ -1,12 +1,12 @@
 package app.lyrablock.lyra.event
 
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.screen.slot.SlotActionType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.inventory.ClickType
 
 object ScreenHandlerEvents {
     fun interface SlotClick {
-        fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType, player: PlayerEntity)
+        fun onSlotClick(slotIndex: Int, button: Int, actionType: ClickType, player: Player)
     }
 
     @JvmField

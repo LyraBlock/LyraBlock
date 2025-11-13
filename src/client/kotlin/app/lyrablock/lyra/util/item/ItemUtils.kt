@@ -1,18 +1,18 @@
 package app.lyrablock.lyra.util.item
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.item.ItemStack
+import net.minecraft.client.Minecraft
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.ItemStack
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 object ItemUtils {
     /** Returns the custom NBT data of the ItemStack, or null if absent. */
     @Suppress("DEPRECATION")
-    fun ItemStack.getCustomData() = get(DataComponentTypes.CUSTOM_DATA)?.nbt
+    fun ItemStack.getCustomData() = get(DataComponents.CUSTOM_DATA)?.copyTag()
 
     /** Returns the lore component of the ItemStack, or null if absent. */
-    fun ItemStack.getLore() = get(DataComponentTypes.LORE)
+    fun ItemStack.getLore() = get(DataComponents.LORE)
 
     /** Returns the lore lines of the ItemStack, or null if absent. */
     fun ItemStack.getLoreLines() = getLore()?.lines
@@ -30,5 +30,5 @@ object ItemUtils {
 
     /** Returns the currently selected ItemStack, or null if unavailable. */
     val selectedStack: ItemStack?
-        get() = MinecraftClient.getInstance().player?.inventory?.selectedStack
+        get() = Minecraft.getInstance().player?.inventory?.selectedItem
 }

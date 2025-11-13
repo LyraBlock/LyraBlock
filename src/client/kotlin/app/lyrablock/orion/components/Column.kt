@@ -6,7 +6,7 @@ import app.lyrablock.orion.Size
 import app.lyrablock.orion.math.CrossAxisAlignment
 import app.lyrablock.orion.math.VerticalAlignment
 import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 /**
  * A column that collects multiple components.
@@ -57,7 +57,7 @@ class Column(
         return finalSize.coerceIn(parentConstraints)
     }
 
-    override fun render(context: DrawContext, size: Size) {
+    override fun render(context: GuiGraphics, size: Size) {
         assert(::measuredChildren.isInitialized)
         
         val gapFloat = gap.toFloat()
@@ -73,7 +73,7 @@ class Column(
         }
 
         context.withPushMatrix {
-            matrices.translate(0f, startY)
+            pose().translate(0f, startY)
             
             measuredChildren.forEach { (component, cachedSize) ->
                 context.withPushMatrix {
@@ -85,10 +85,10 @@ class Column(
                         CrossAxisAlignment.STRETCH -> 0f // TODO: Implement stretch by modifying child constraints
                     }
                     
-                    matrices.translate(offsetX, 0f)
+                    pose().translate(offsetX, 0f)
                     component.render(context, cachedSize)
                 }
-                matrices.translate(0f, cachedSize.height + gapFloat)
+                pose().translate(0f, cachedSize.height + gapFloat)
             }
         }
     }

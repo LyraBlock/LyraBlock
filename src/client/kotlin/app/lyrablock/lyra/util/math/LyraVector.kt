@@ -1,7 +1,7 @@
 package app.lyrablock.lyra.util.math
 
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.Vec3i
+import net.minecraft.core.Vec3i
+import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
 import java.lang.Math.toRadians
 import kotlin.math.cos
@@ -38,7 +38,7 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
 
     fun normalized() = this / length
 
-    fun toVec3d() = Vec3d(x, y, z)
+    fun toVec3d() = Vec3(x, y, z)
 
     fun toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
@@ -64,7 +64,7 @@ data class LyraVector(val x: Double, val y: Double, val z: Double) {
 
         fun of(x: Number, y: Number, z: Number) = LyraVector(x.toDouble(), y.toDouble(), z.toDouble())
 
-        fun of(that: Vec3d) = LyraVector(that.x, that.y, that.z)
+        fun of(that: Vec3) = LyraVector(that.x, that.y, that.z)
 
         fun of(that: Vec3i) = of(that.x, that.y, that.z)
 

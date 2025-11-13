@@ -5,7 +5,7 @@ import app.lyrablock.orion.Constraints
 import app.lyrablock.orion.OrionComponent
 import app.lyrablock.orion.Size
 import app.lyrablock.orion.render.DrawContextDSL.withPushMatrix
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.GuiGraphics
 
 /**
  * Visually moves the element, but does not affect the actual logic
@@ -16,9 +16,9 @@ class VisuallyMove(val dx: Number = 0, val dy: Number = 0, child: () -> OrionCom
 
     override fun measure(parentConstraints: Constraints): Size = child.measure(parentConstraints)
 
-    override fun render(context: DrawContext, size: Size) {
+    override fun render(context: GuiGraphics, size: Size) {
         context.withPushMatrix {
-            matrices.translate(dx, dy)
+            pose().translate(dx, dy)
             child.render(context, size)
         }
     }

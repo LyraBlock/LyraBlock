@@ -2,7 +2,7 @@ package app.lyrablock.lyra.event
 
 import app.lyrablock.lyra.mixin.client.ItemStackMixin
 import net.fabricmc.fabric.api.event.EventFactory
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.ItemStack
 
 @InvokedBy(ItemStackMixin::class)
 object ItemUseEvents {

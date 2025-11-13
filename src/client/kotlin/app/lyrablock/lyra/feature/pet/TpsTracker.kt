@@ -11,9 +11,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
 import net.fabricmc.fabric.api.networking.v1.PacketSender
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.Minecraft
 import net.minecraft.server.MinecraftServer
-import net.minecraft.server.network.ServerPlayNetworkHandler
+import net.minecraft.server.network.ServerGamePacketListenerImpl
 
 @LyraModule
 object TpsTracker {
@@ -30,8 +30,8 @@ object TpsTracker {
         HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS,
             LyraIdentifier.of("tps")) { context, _ ->
                 val tps = getTps()
-                context.drawText(
-                    MinecraftClient.getInstance().textRenderer,
+                context.drawString(
+                    Minecraft.getInstance().font,
                     if (tps == null) "TPS: §7(Collecting...)" else "TPS: " + getTpsDisplay(),
                     10,
                     10,
@@ -61,7 +61,7 @@ object TpsTracker {
         }
     }
 
-    fun onJoinServer(handler: ServerPlayNetworkHandler, sender: PacketSender, server: MinecraftServer) {
+    fun onJoinServer(handler: ServerGamePacketListenerImpl, sender: PacketSender, server: MinecraftServer) {
         tickData.clear()
     }
 

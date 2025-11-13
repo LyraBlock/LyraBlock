@@ -3,6 +3,7 @@ package app.lyrablock.lyra.feature.chat
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.util.MCUtils
 import app.lyrablock.lyra.util.chat.HypixelChatModifierWrapper
+import app.lyrablock.lyra.util.position
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents
 
 @LyraModule
@@ -15,7 +16,7 @@ object CoordinatesSender {
 
     fun getCoordinates(): String {
         val player = MCUtils.thePlayer!!
-        val pos = player.pos
+        val pos = player.position
         return String.format("%.1f %.1f %.1f", pos.x, pos.y, pos.z)
     }
 
