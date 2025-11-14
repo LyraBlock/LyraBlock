@@ -3,8 +3,6 @@ package app.lyrablock.lyra.feature.misc
 import app.lyrablock.lyra.LyraModule
 import app.lyrablock.lyra.util.MCUtils
 import app.lyrablock.lyra.util.item.ItemUtils.getCustomData
-import app.lyrablock.lyra.util.math.component1
-import app.lyrablock.lyra.util.math.component2
 import app.lyrablock.lyra.util.render.LyraRenderLayer
 import app.lyrablock.lyra.util.render.WorldRenderDSL.renderBlockFilled
 import app.lyrablock.orion.math.OrionColor
@@ -55,10 +53,12 @@ object AotvHelper {
         val distance = getEtherwarpDistance(player)
         if (distance < 0) return null
 
+        val gameRenderer = context.gameRenderer()
+        val camera = gameRenderer.mainCamera
         val world = MCUtils.theClient.level!!
         val player = MCUtils.thePlayer!!
-        val (pitch, yaw) = player.rotationVector
-        val start = player.eyePosition
+        val (pitch, yaw) = camera.xRot to camera.yRot
+        val start = camera.position
         val end = start.add(Vec3.directionFromRotation(pitch, yaw).scale(distance.toDouble()))
 
         val hitResult = world.clip(
@@ -87,6 +87,5 @@ object AotvHelper {
             LyraRenderLayer.FILLED, block.x, block.y, block.z, OVERLAY_COLOR
         )
 
-        // TODO: FOV change so one can see the targeted block clearly
     }
 }
