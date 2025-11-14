@@ -16,10 +16,11 @@ base {
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // Only use this when depending on other mods, because Loom adds essential
-    // repositories for Minecraft and libraries automatically.
     maven { url = URI("https://repo.hypixel.net/repository/Hypixel/") }
+    maven {
+        name = "ParchmentMC"
+        url = URI("https://maven.parchmentmc.org")
+    }
 }
 
 loom {
@@ -40,7 +41,11 @@ dependencies {
     implementation("io.ktor:ktor-client-core:${ktor_version}")
     implementation("io.ktor:ktor-client-cio:${ktor_version}")
     minecraft("com.mojang:minecraft:${project.property("minecraft_version")}")
-    mappings(loom.officialMojangMappings())
+    @Suppress("UnstableApiUsage")
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.21.10:2025.10.12@zip")
+    })
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.hypixel:mod-api:1.0.1")
 
